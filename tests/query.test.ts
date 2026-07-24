@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { Query } from "../src/query";
-import { Graph} from "../src/graph" ;
+import { Graph } from "../src/graph";
 
 describe("Query", () => {
+
     it("records the starting vertices", () => {
         const query = new Query(["ravi", "northflow"]);
         expect(query.getPlan()).toEqual([
@@ -13,34 +14,48 @@ describe("Query", () => {
             },
         ]);
     });
-    it("starts a query from the graph", () =>{
-        const graph = new Graph() ;
+    it("starts a query from the graph", () => {
+        const graph = new Graph();
         const query = graph.v("ravi");
         expect(query).toBeInstanceOf(Query);
         expect(query.getPlan()).toEqual([
             {
-                kind:"vertex",
-                ids:["ravi"],
+                kind: "vertex",
+                ids: ["ravi"],
             },
         ]);
     });
-    it("records an outgoing traversal", ()=>{
+    it("records an outgoing traversal", () => {
+
         const graph = new Graph();
-        const query = graph.v("ravi").out("founded") ;
+        const query = graph.v("ravi").out("founded");
 
         expect(query.getPlan()).toEqual([
             {
-                kind:"vertex",
-                ids:["ravi"],
+                kind: "vertex",
+                ids: ["ravi"],
 
             },
             {
-                kind:"out",
-                label:"founded",
+                kind: "out",
+                label: "founded",
 
             }
         ]);
     });
-}
-);
+    it("records an incoming traversal", () => {
+        const graph = new Graph();
+        const query = graph.v("northflow").in("founded");
+        expect(query.getPlan()).toEqual([
+            {
+                kind: "vertex",
+                ids: ["northflow"],
+            },
+            {
+                kind: "in",
+                label: "founded",
+            },
 
+        ]);
+    });
+});
