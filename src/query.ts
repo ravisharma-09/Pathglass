@@ -20,8 +20,13 @@ export interface filterStep{
     readonly kind: "filter" ;
     readonly criteria : properties ;
 }
+export interface takestep {
+    readonly kind:"take" ;
+    readonly count:number ;
 
-export type queryStep = vertexStep | outStep | inStep | uniqueStep | filterStep;
+}
+
+export type queryStep = vertexStep | outStep | inStep | uniqueStep | filterStep | takestep;
 export class Query {
     private readonly steps: queryStep[] = [];
     constructor(
@@ -64,6 +69,16 @@ export class Query {
             kind: "filter" ,
             criteria: {...criteria} ,
         }) ;
+        return this ;
+    }
+    take(count:number): this{
+        if(!Number.isInteger(count) || count < 0 ){
+            throw new Error("Take count must be a non-negative integer");
+        }
+        this.steps.push({
+            kind: "take",
+            count,
+        });
         return this ;
     }
 
