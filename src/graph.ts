@@ -1,3 +1,4 @@
+import { Query } from "./query" ;
 export type  properties = Record<string, unknown>  ; 
 export interface Vertex{
     readonly id:string;
@@ -15,6 +16,10 @@ export class Graph{
     private readonly edges: edge[] = [] ;
     private readonly outgoingEdges =  new Map<string,edge[]>() ;
     private readonly incomingEdges = new Map<string,edge[]>() ;
+
+    v(...vertexIds: string[]): Query{
+        return new Query(vertexIds) ;
+    }
 
     addVertex(id:string,properties: properties = {} ): Vertex{
         const  cleanId = id.trim() ;
@@ -88,6 +93,6 @@ export class Graph{
     }
     get edgeCount(): number{
         return this.edges.length ;
-        
+
     }
 } 
