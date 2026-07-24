@@ -68,5 +68,22 @@ describe("Query", () => {
         const results = graph.v("ravi", "missing").run() ;
         expect(results).toEqual([ravi]) ;
     }) ;
+    it("follows outgoing edges with the requested label", () => {
+        const graph = new Graph() ;
+        graph.addVertex("ravi") ;
+        const northflow = graph.addVertex("northflow",{
+            type:"company",
+        });
+        graph.addVertex("hackclub") ;
+
+        graph.addEdge("ravi", "northflow", "founded") ;
+        graph.addEdge("ravi", "hackclub", "joined");
+        const results = graph
+        .v("ravi")
+        .out("founded")
+        .run();
+
+        expect(results).toEqual([northflow]);
+    } ); 
 
 });

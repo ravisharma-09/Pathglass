@@ -47,12 +47,34 @@ export class Query {
         if (!firstStep || firstStep.kind !== "vertex"){
             return [];
         }
-        const results: Vertex[] = [] ;
+
+        let results: Vertex[] = [] ;
         for (const id of firstStep.ids){
             const vertex = this.graph.getVertex(id) ;
             if (vertex){
                 results.push(vertex);
             }
+        }
+        for (const step of this.steps.slice(1)){
+            if (step.kind !== "out"){
+                continue ;
+            }
+            const nextResults : Vertex[] = [] ;
+            for (const vertex of results) {
+                const edges = this.graph.getOutgoingEdges(vertex.id);
+                for(const edge of edges){
+                    if (edge.label !== step.label){
+                        continue ;
+
+                    }
+                    const target = this.graph.getVertex(edge.target);
+
+                    if (target){
+                        nextResults.push(target) ;
+                    }
+                }
+            }
+            results = nextResults ;
         }
 
         return results ; 
