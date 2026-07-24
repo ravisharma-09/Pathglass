@@ -1,8 +1,13 @@
-export interface queryStep{
+export interface vertexStep{
     readonly kind: "vertex" ;
     readonly ids : readonly string[] ;
 
 }
+export interface outStep{
+    readonly kind:"out" ;
+    readonly label: string ;
+}
+export type queryStep = vertexStep | outStep ;
 export class Query {
     private readonly steps: queryStep[] = [] ;
     constructor(vertexIds: string[]){
@@ -11,10 +16,23 @@ export class Query {
             ids: vertexIds.map((id)=> id.trim()),
         }) ;
     }
+    out(label: string) : this {
+        this.steps.push({
+            kind:"out",
+            label: label.trim(),
+        }) ;
+        return this ;
+    
+      
+    }
     getPlan():queryStep[]{
-        return this.steps.map((step)=>({
-            ...step,
+        return this.steps.map((step)=>{
+           if (step.kind === "vertex"){
+           return { ...step,
             ids:[...step.ids],
-        })) ;
+        };
+        }
+        return {...step} ;
+    }) ;
     }
 }

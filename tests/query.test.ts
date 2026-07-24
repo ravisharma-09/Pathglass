@@ -24,5 +24,23 @@ describe("Query", () => {
             },
         ]);
     });
+    it("records an outgoing traversal", ()=>{
+        const graph = new Graph();
+        const query = graph.v("ravi").out("founded") ;
+
+        expect(query.getPlan()).toEqual([
+            {
+                kind:"vertex",
+                ids:["ravi"],
+
+            },
+            {
+                kind:"out",
+                label:"founded",
+
+            }
+        ]);
+    });
 }
 );
+
