@@ -139,6 +139,24 @@ describe("Query", () => {
             },
         ]);
     });
+    it("removes duplicate vertices from the results", () => {
+        const graph = new Graph();
+
+        graph.addVertex("ravi");
+        graph.addVertex("garvit") ;
+        const northflow = graph.addVertex("northflow") ;
+
+        graph.addEdge("ravi","northflow","works-on") ;
+        graph.addEdge("garvit","northflow", "works-on") ;
+        const results = graph 
+            .v("ravi", "garvit")
+            .out("works-on")
+            .unique()
+            .run();
+
+        expect(results).toEqual([northflow]);
+
+    });
 
 
 });

@@ -70,6 +70,18 @@ export class Query {
             }
         }
         for (const step of this.steps.slice(1)) {
+            if(step.kind == "unique"){
+                const seen = new Set<string>() ;
+                results = results.filter((vertex) => {
+                    if(seen.has(vertex.id)){
+                        return false ;
+                    }
+                    seen.add(vertex.id);
+                    return true ;
+
+                });
+                continue ;
+            }
             const nextResults: Vertex[] = [];
             if (step.kind === "out") {
                 for (const vertex of results) {
