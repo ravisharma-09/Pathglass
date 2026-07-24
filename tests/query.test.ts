@@ -101,6 +101,25 @@ describe("Query", () => {
             .run() ;
             expect(results).toEqual([ravi]);
     });
-     
+    it("runs multiple traversal steps in sequence", ()=>{
+        const graph = new Graph() ;
+        graph.addVertex("ravi") ;
+        graph.addVertex("northflow") ;
+        const clinic = graph.addVertex("city-clinic",{
+            type: "clinic",
+        });
+        graph.addEdge("ravi","northflow","founded");
+        graph.addEdge("northflow","city-clinic","serves") ;
+
+        const results = graph
+            .v("ravi")
+            .out("founded")
+            .out("serves")
+            .run();
+
+            expect(results).toEqual([clinic]) ;
+    });
+
+
 
 });
