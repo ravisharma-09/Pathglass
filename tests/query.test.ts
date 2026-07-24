@@ -180,5 +180,30 @@ describe("Query", () => {
             },
         ]);
     });
+    it("keeps vertices that match every filter property", ()=>{
+        const graph = new Graph();
+
+        graph.addVertex("ravi",{
+            type:"person",
+            city:"New York",
+        });
+        const northflow = graph.addVertex("northflow",{
+            type:"company",
+           city:"New York",
+        });
+        graph.addVertex("other-company",{
+            type:"company",
+            city:"Chandigarh",
+        });
+        const results = graph 
+            .v("ravi", "northflow", "other-company")
+            .filter({
+                type: "company",
+                city:"New York",
+            })
+            .run();
+        expect(results).toEqual([northflow]);
+
+    });
 
 });

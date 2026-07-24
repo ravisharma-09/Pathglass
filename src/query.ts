@@ -93,6 +93,15 @@ export class Query {
                 });
                 continue ;
             }
+            if(step.kind === "filter"){
+                const criteria = Object.entries(step.criteria);
+                results = results.filter((vertex)=>{
+                    return criteria.every(([key,expectedValue])=>{
+                        return vertex.properties[key] === expectedValue ;
+                    });
+                });
+                continue ;
+            }
             const nextResults: Vertex[] = [];
             if (step.kind === "out") {
                 for (const vertex of results) {
