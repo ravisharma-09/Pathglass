@@ -157,6 +157,28 @@ describe("Query", () => {
         expect(results).toEqual([northflow]);
 
     });
+    it("records a property filter", () => {
+        const graph = new Graph();
+        const query = graph
+            .v("ravi", "northflow")
+            .filter({
+                type: "company",
+                city:"New York",
+            });
+        expect(query.getPlan()).toEqual([
+            {
+                kind:"vertex",
+                ids:["ravi", "northflow"]
+            },
+            {
+                kind:"filter",
+                criteria:{
+                    type:"company",
+                    city:"New York",
 
+                },
+            },
+        ]);
+    });
 
 });

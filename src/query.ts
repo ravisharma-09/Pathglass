@@ -1,4 +1,4 @@
-import type { Graph, Vertex } from "./graph";
+import type { Graph, Vertex, properties } from "./graph";
 
 export interface vertexStep {
     readonly kind: "vertex";
@@ -16,8 +16,12 @@ export interface inStep {
 export interface uniqueStep {
     readonly kind: "unique";
 }
+export interface filterStep{
+    readonly kind: "filter" ;
+    readonly criteria : properties ;
+}
 
-export type queryStep = vertexStep | outStep | inStep | uniqueStep;
+export type queryStep = vertexStep | outStep | inStep | uniqueStep | filterStep;
 export class Query {
     private readonly steps: queryStep[] = [];
     constructor(
@@ -54,6 +58,13 @@ export class Query {
 
 
         return this;
+    }
+    filter(criteria:properties):this{
+        this.steps.push({
+            kind: "filter" ,
+            criteria: {...criteria} ,
+        }) ;
+        return this ;
     }
 
     run(): Vertex[] {
@@ -125,6 +136,12 @@ export class Query {
                 return {
                     ...step,
                     ids: [...step.ids],
+                };
+            }
+            if (step.kind === "filter"){
+                return {
+                    ...step,
+                    criteria:{...step.criteria },
                 };
             }
             return { ...step };
