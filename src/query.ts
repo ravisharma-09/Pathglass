@@ -56,11 +56,9 @@ export class Query {
             }
         }
         for (const step of this.steps.slice(1)){
-            if (step.kind !== "out"){
-                continue ;
-            }
-            const nextResults : Vertex[] = [] ;
-            for (const vertex of results) {
+            const nextResults: Vertex[] = [] ;
+            if (step.kind === "out"){
+               for (const vertex of results) {
                 const edges = this.graph.getOutgoingEdges(vertex.id);
                 for(const edge of edges){
                     if (edge.label !== step.label){
@@ -74,7 +72,23 @@ export class Query {
                     }
                 }
             }
-            results = nextResults ;
+        }
+           if(step.kind === "in"){
+            for (const vertex of results){
+                const edges = this.graph.getIncomingEdges(vertex.id);
+
+                for(const edge of edges){
+                    if (edge.label !== step.label){
+                        continue ;
+                    }
+                    const source = this.graph.getVertex(edge.source);
+                    if (source){
+                        nextResults.push(source);
+                    }
+                }
+            }
+           }
+           results = nextResults ;
         }
 
         return results ; 

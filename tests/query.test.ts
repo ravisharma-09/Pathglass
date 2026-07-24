@@ -84,6 +84,23 @@ describe("Query", () => {
         .run();
 
         expect(results).toEqual([northflow]);
-    } ); 
+    });
+    it("follows incoming edges with requested label", ()=>{
+        const graph = new Graph() ;
+        const ravi = graph.addVertex("ravi",{
+            type:"person",
+        });
+        graph.addVertex("alex") ;
+        graph.addVertex("northflow") ;
+        graph.addEdge("ravi","northflow","founded") ;
+        graph.addEdge("alex","northflow","joined") ;
+
+        const results = graph 
+            .v("northflow")
+            .in("founded")
+            .run() ;
+            expect(results).toEqual([ravi]);
+    });
+     
 
 });
