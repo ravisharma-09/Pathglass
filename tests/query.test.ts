@@ -5,8 +5,8 @@ import { Graph } from "../src/graph";
 describe("Query", () => {
 
     it("records the starting vertices", () => {
-        const graph = new Graph() ;
-        const query = new Query(graph ,["ravi", "northflow"]);
+        const graph = new Graph();
+        const query = new Query(graph, ["ravi", "northflow"]);
         expect(query.getPlan()).toEqual([
             {
                 kind: "vertex",
@@ -59,57 +59,57 @@ describe("Query", () => {
 
         ]);
     });
-    it("returns the starting vertices when it runs", ()=>{
-        const graph = new Graph() ;
-        const ravi = graph.addVertex("ravi",{
-            name:"Ravi",
-        }) ;
-        graph.addVertex("northflow") ;
-        const results = graph.v("ravi", "missing").run() ;
-        expect(results).toEqual([ravi]) ;
-    }) ;
-    it("follows outgoing edges with the requested label", () => {
-        const graph = new Graph() ;
-        graph.addVertex("ravi") ;
-        const northflow = graph.addVertex("northflow",{
-            type:"company",
+    it("returns the starting vertices when it runs", () => {
+        const graph = new Graph();
+        const ravi = graph.addVertex("ravi", {
+            name: "Ravi",
         });
-        graph.addVertex("hackclub") ;
+        graph.addVertex("northflow");
+        const results = graph.v("ravi", "missing").run();
+        expect(results).toEqual([ravi]);
+    });
+    it("follows outgoing edges with the requested label", () => {
+        const graph = new Graph();
+        graph.addVertex("ravi");
+        const northflow = graph.addVertex("northflow", {
+            type: "company",
+        });
+        graph.addVertex("hackclub");
 
-        graph.addEdge("ravi", "northflow", "founded") ;
+        graph.addEdge("ravi", "northflow", "founded");
         graph.addEdge("ravi", "hackclub", "joined");
         const results = graph
-        .v("ravi")
-        .out("founded")
-        .run();
+            .v("ravi")
+            .out("founded")
+            .run();
 
         expect(results).toEqual([northflow]);
     });
-    it("follows incoming edges with requested label", ()=>{
-        const graph = new Graph() ;
-        const ravi = graph.addVertex("ravi",{
-            type:"person",
+    it("follows incoming edges with requested label", () => {
+        const graph = new Graph();
+        const ravi = graph.addVertex("ravi", {
+            type: "person",
         });
-        graph.addVertex("alex") ;
-        graph.addVertex("northflow") ;
-        graph.addEdge("ravi","northflow","founded") ;
-        graph.addEdge("alex","northflow","joined") ;
+        graph.addVertex("alex");
+        graph.addVertex("northflow");
+        graph.addEdge("ravi", "northflow", "founded");
+        graph.addEdge("alex", "northflow", "joined");
 
-        const results = graph 
+        const results = graph
             .v("northflow")
             .in("founded")
-            .run() ;
-            expect(results).toEqual([ravi]);
+            .run();
+        expect(results).toEqual([ravi]);
     });
-    it("runs multiple traversal steps in sequence", ()=>{
-        const graph = new Graph() ;
-        graph.addVertex("ravi") ;
-        graph.addVertex("northflow") ;
-        const clinic = graph.addVertex("city-clinic",{
+    it("runs multiple traversal steps in sequence", () => {
+        const graph = new Graph();
+        graph.addVertex("ravi");
+        graph.addVertex("northflow");
+        const clinic = graph.addVertex("city-clinic", {
             type: "clinic",
         });
-        graph.addEdge("ravi","northflow","founded");
-        graph.addEdge("northflow","city-clinic","serves") ;
+        graph.addEdge("ravi", "northflow", "founded");
+        graph.addEdge("northflow", "city-clinic", "serves");
 
         const results = graph
             .v("ravi")
@@ -117,9 +117,28 @@ describe("Query", () => {
             .out("serves")
             .run();
 
-            expect(results).toEqual([clinic]) ;
+        expect(results).toEqual([clinic]);
     });
-
+    it("records a unique step",()=>{
+        const graph = new Graph() ;
+        const query= graph
+            .v("ravi")
+            .out("knows")
+            .unique();
+        expect(query.getPlan()).toEqual([
+            {
+                kind: "vertex" ,
+                ids: ["ravi"],
+            },
+            {
+                kind:"out",
+                label:"knows",
+            },
+            {
+                kind:"unique",
+            },
+        ]);
+    });
 
 
 });
