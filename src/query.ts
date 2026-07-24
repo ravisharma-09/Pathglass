@@ -1,3 +1,5 @@
+import type {Graph, Vertex} from "./graph" ;
+
 export interface vertexStep{
     readonly kind: "vertex" ;
     readonly ids : readonly string[] ;
@@ -15,7 +17,10 @@ export interface inStep{
 export type queryStep = vertexStep | outStep | inStep;
 export class Query {
     private readonly steps: queryStep[] = [] ;
-    constructor(vertexIds: string[]){
+    constructor(
+        private readonly graph : Graph,
+        vertexIds: string[],
+    ){
         this.steps.push({
             kind: "vertex",
             ids: vertexIds.map((id)=> id.trim()),
@@ -36,6 +41,21 @@ export class Query {
             label:label.trim(),
         }) ;
         return this ;
+    }
+    run(): Vertex[] {
+        const firstStep = this.steps[0] ;
+        if (!firstStep || firstStep.kind !== "vertex"){
+            return [];
+        }
+        const results: Vertex[] = [] ;
+        for (const id of firstStep.ids){
+            const vertex = this.graph.getVertex(id) ;
+            if (vertex){
+                results.push(vertex);
+            }
+        }
+
+        return results ; 
     }
     getPlan():queryStep[]{
         return this.steps.map((step)=>{

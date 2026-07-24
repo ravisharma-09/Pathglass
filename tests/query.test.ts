@@ -5,7 +5,8 @@ import { Graph } from "../src/graph";
 describe("Query", () => {
 
     it("records the starting vertices", () => {
-        const query = new Query(["ravi", "northflow"]);
+        const graph = new Graph() ;
+        const query = new Query(graph ,["ravi", "northflow"]);
         expect(query.getPlan()).toEqual([
             {
                 kind: "vertex",
@@ -58,4 +59,14 @@ describe("Query", () => {
 
         ]);
     });
+    it("returns the starting vertices when it runs", ()=>{
+        const graph = new Graph() ;
+        const ravi = graph.addVertex("ravi",{
+            name:"Ravi",
+        }) ;
+        graph.addVertex("northflow") ;
+        const results = graph.v("ravi", "missing").run() ;
+        expect(results).toEqual([ravi]) ;
+    }) ;
+
 });

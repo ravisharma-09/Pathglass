@@ -18,7 +18,7 @@ export class Graph{
     private readonly incomingEdges = new Map<string,edge[]>() ;
 
     v(...vertexIds: string[]): Query{
-        return new Query(vertexIds) ;
+        return new Query(this,vertexIds) ;
     }
 
     addVertex(id:string,properties: properties = {} ): Vertex{
