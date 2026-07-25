@@ -102,7 +102,7 @@ export class Query {
 
     }
 
-    run(): Vertex[] {
+    run(): unknown[] {
         const firstStep = this.steps[0];
         if (!firstStep || firstStep.kind !== "vertex") {
             return [];
@@ -172,6 +172,16 @@ export class Query {
                         }
                     }
                 }
+            }
+            if(step.kind === "property"){
+                const values: unknown[] = [] ;
+                for (const vertex of results){
+                    const value = vertex.properties[step.key];
+                    if (value !== undefined){
+                        values.push(value) ;
+                    }
+                }
+                return values ;
             }
             results = nextResults;
         }

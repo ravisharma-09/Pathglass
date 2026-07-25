@@ -289,4 +289,22 @@ describe("Query", () => {
             graph.v("northflow").property(" ");
         }).toThrowError("Property name cannot be empty") ;
     });
+    it("returns values from vertex property", ()=>{
+        const graph = new Graph();
+        graph.addVertex("ravi");
+        graph.addVertex("northflow", {
+            name:"NorthFlow",
+        });
+        graph.addVertex("city-clinic", {
+            name:"City Clinic",
+        });
+        const results = graph 
+            .v("northflow", "ravi", "city-clinic")
+            .property("name")
+            .run() ;
+        expect(results).toEqual([
+            "NorthFlow",
+            "City Clinic",
+        ]);
+    });
 })
