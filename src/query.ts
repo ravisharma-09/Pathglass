@@ -117,6 +117,10 @@ export class Query {
                 });
                 continue ;
             }
+            if(step.kind === "take") {
+                results = results.slice(0, step.count) ;
+                continue ;
+            }
             const nextResults: Vertex[] = [];
             if (step.kind === "out") {
                 for (const vertex of results) {

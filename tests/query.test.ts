@@ -235,5 +235,34 @@ describe("Query", () => {
 
         }).toThrowError("Take count must be a non-negative integer") ;
     });
+    it("limits the number of results" ,() =>{
+
+        const graph = new Graph() ;
+
+        graph.addVertex("ravi");
+
+        const northflow = graph.addVertex("northflow");
+
+        const garvit = graph.addVertex("garvit");
+
+        graph.addVertex("city-clinic");
+
+
+
+        graph.addEdge("ravi","northflow","knows");
+        graph.addEdge("ravi","garvit","knows");
+        graph.addEdge("ravi","city-clinic","knows");
+
+        const results = graph
+            .v("ravi")
+            .out("knows")
+            .take(2)
+            .run();
+        
+            expect(results).toEqual([
+                northflow,
+                garvit,
+            ]);
+        });
 
 });
