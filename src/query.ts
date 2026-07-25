@@ -1,4 +1,4 @@
-import { TestRunner } from "vitest";
+import { takeFrom } from "./lazy";
 import type { Graph, Vertex, properties } from "./graph";
 
 export interface vertexStep {
@@ -107,13 +107,26 @@ export class Query {
         if (!firstStep || firstStep.kind !== "vertex"){
             return ;
         }
-        for (const id of firstStep.ids){
-            const vertex = this.graph.getVertex(id); 
+        const startingIds = firstStep.ids ;
+        const graph = this.graph ;
+
+        function* startingVertices(): Generator<Vertex>{
+        for (const id of startingIds){
+            const vertex = graph.getVertex(id); 
             if (vertex) {
                 yield vertex ;
             }
         }
     }
+    let results: Iterable<Vertex> = startingVertices() ;
+
+    for (const step of this.steps.slice(1)){
+        if (step.kind === "take"){
+            results = takeFrom(results, step.count);
+        }
+    }
+    yield* results ;
+}
 
     run(): unknown[] {
         const firstStep = this.steps[0];

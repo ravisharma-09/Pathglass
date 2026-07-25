@@ -320,4 +320,22 @@ describe("Query", () => {
         expect(firstResult.value).toEqual(ravi) ;
         expect(firstResult.done).toBe(false) ;
     });
+    it("stops reading starting vertices after the take limit", () => {
+        const graph = new Graph() ;
+        const ravi = graph.addVertex("ravi") ;
+
+        graph.addVertex("northflow") ;
+        graph.addVertex("garvit") ;
+
+        const getVertex = vi.spyOn(graph, "getVertex");
+
+        const results = Array.from(
+            graph
+                .v("ravi","northflow", "garvit")
+                .take(1)
+                .iterate(),
+        );
+        expect(results).toEqual([ravi]);
+        expect(getVertex).toHaveBeenCalledOnce() ;
+    });
 })
