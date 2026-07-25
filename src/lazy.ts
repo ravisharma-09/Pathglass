@@ -14,3 +14,13 @@ export function* takeFrom<T>(
         }
     }
 }
+export function* filterFrom<T>(
+    items: Iterable<T>, 
+    predicate:(item: T)=> boolean,
+): Generator<T> {
+    for (const item of items){
+        if (predicate(item)){
+            yield item ;
+        }
+    }
+}
