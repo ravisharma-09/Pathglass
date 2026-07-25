@@ -101,6 +101,19 @@ export class Query {
         return this;
 
     }
+    *iterate(): Generator<Vertex> {
+        const firstStep = this.steps[0] ;
+
+        if (!firstStep || firstStep.kind !== "vertex"){
+            return ;
+        }
+        for (const id of firstStep.ids){
+            const vertex = this.graph.getVertex(id); 
+            if (vertex) {
+                yield vertex ;
+            }
+        }
+    }
 
     run(): unknown[] {
         const firstStep = this.steps[0];

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Query } from "../src/query";
 import { Graph } from "../src/graph";
 
@@ -306,5 +306,18 @@ describe("Query", () => {
             "NorthFlow",
             "City Clinic",
         ]);
+    });
+    it("waits beofre reading the starting vertex", () =>{
+        const graph = new Graph() ;
+        const ravi = graph.addVertex("ravi");
+
+        const getVertex = vi.spyOn(graph,"getVertex");
+        const iterator = graph.v("ravi").iterate() ;
+        expect(getVertex).not.toHaveBeenCalled();
+        const firstResult = iterator.next() ;
+
+        expect(getVertex).toHaveBeenCalledOnce();
+        expect(firstResult.value).toEqual(ravi) ;
+        expect(firstResult.done).toBe(false) ;
     });
 })
