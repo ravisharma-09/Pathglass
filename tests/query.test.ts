@@ -264,5 +264,29 @@ describe("Query", () => {
                 garvit,
             ]);
         });
+    
+    it("records a property step", ()=>{
+        const graph = new Graph() ;
+        const query = graph
+            .v("northflow")
+            .property("name") ;
 
-});
+        expect(query.getPlan()).toEqual([
+            {
+                kind:"vertex",
+                ids:["northflow"]
+            },
+            {
+                kind:"property",
+                key:"name",
+            },
+        ]);
+    });
+    it("rejects an empty propert name", ()=>{
+        const graph = new Graph() ;
+
+        expect(()=>{
+            graph.v("northflow").property(" ");
+        }).toThrowError("Property name cannot be empty") ;
+    });
+})

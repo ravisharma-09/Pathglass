@@ -1,3 +1,4 @@
+import { TestRunner } from "vitest";
 import type { Graph, Vertex, properties } from "./graph";
 
 export interface vertexStep {
@@ -25,8 +26,13 @@ export interface takestep {
     readonly count:number ;
 
 }
+export interface propertyStep{
+    readonly kind: "property"
+    readonly key : string ;
 
-export type queryStep = vertexStep | outStep | inStep | uniqueStep | filterStep | takestep;
+}
+
+export type queryStep = vertexStep | outStep | inStep | uniqueStep | filterStep | takestep | propertyStep;
 export class Query {
     private readonly steps: queryStep[] = [];
     constructor(
@@ -80,6 +86,20 @@ export class Query {
             count,
         });
         return this ;
+    }
+    property(key: string): this {
+        const cleanKey = key.trim() ;
+
+        if (!cleanKey){
+            throw new Error("Property name cannot be empty");
+
+        }
+        this.steps.push({
+            kind:"property",
+            key:cleanKey,
+        });
+        return this;
+
     }
 
     run(): Vertex[] {
