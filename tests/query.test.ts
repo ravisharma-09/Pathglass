@@ -206,4 +206,34 @@ describe("Query", () => {
 
     });
 
+    it("records a take step",()=>{
+        const graph = new Graph() ;
+        const query = graph
+            .v("ravi")
+            .out("knows")
+            .take(2) ;
+        expect(query.getPlan()).toEqual([
+            {
+                kind:"vertex",
+                ids:["ravi"],
+            },
+            {
+                 kind:"out",
+                 label:"knows",
+
+            },
+            {
+                kind:"take",
+                count:2,
+            },
+        ]);
+    });
+    it("rejects an invalid take count", ()=>{
+        const graph = new Graph();
+        expect(()=>{
+            graph.v("ravi").take(-1);
+
+        }).toThrowError("Take count must be a non-negative integer") ;
+    });
+
 });
