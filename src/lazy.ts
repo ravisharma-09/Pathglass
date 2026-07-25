@@ -24,3 +24,22 @@ export function* filterFrom<T>(
         }
     }
 }
+export function* uniqueFrom<T, K>(
+    items: Iterable<T>,
+    getKey: (item:T) => K,
+
+):Generator<T> {
+    const seen = new Set<K>();
+
+    for (const item of items){
+        const key = getKey(item) ;
+
+        if(seen.has(key)){
+            continue ;
+        }
+
+        seen.add(key) ;
+        yield item ;
+    }
+}
+   

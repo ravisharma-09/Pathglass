@@ -1,5 +1,7 @@
 import { describe, expect,it } from "vitest";
-import { filterFrom , takeFrom } from "../src/lazy";
+import { filterFrom , takeFrom , uniqueFrom} from "../src/lazy";
+
+
 
 describe("lazy helpers", () => {
     it("takes only the requested items", ()=>{
@@ -50,5 +52,42 @@ describe("lazy helpers", () => {
 
         expect(firstResult.value).toBe(2) ;
         expect(visited).toEqual([1,2]) ;
+    });
+    it("yield only the first item with each key", () => {
+        const items = [
+            {id: "ravi"},
+            { id: "northflow"},
+            { id: "ravi"},
+        ];
+        const results = Array.from(
+            uniqueFrom(items, (item) => item.id),
+
+        );
+        expect(results).toEqual([
+            items[0],
+            items[1],
+        ]);
+    });
+    it("checks for duplicates only as items as requested", () => {
+        const visited: number[] = [] ;
+
+        function* numbers(){
+            for(const number of [1,1,2,3]){
+                visited.push(number);
+                yield number ;
+
+            }
+        }
+        const iterator = uniqueFrom(
+            numbers(),
+            (number) => number,
+
+        );
+        expect(visited).toEqual([]) ;
+        expect(iterator.next().value).toBe(1) ;
+        expect(visited).toEqual([1]);
+
+        expect(iterator.next().value).toBe(2);
+        expect(visited).toEqual([1,1,2]);
     });
 });
