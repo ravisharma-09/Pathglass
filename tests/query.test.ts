@@ -338,4 +338,27 @@ describe("Query", () => {
         expect(results).toEqual([ravi]);
         expect(getVertex).toHaveBeenCalledOnce() ;
     });
+    it("stops outgoing traversal after the take limit", () => {
+        const graph = new Graph() ;
+
+        graph.addVertex("ravi") ;
+        const northflow = graph.addVertex("northflow") ;
+        graph.addVertex("garvit") ;
+
+        graph.addEdge("ravi", "northflow", "knows") ;
+        graph.addEdge("ravi", "garvit", "knows") ;
+
+        const getVertex = vi.spyOn(graph, "getVertex") ;
+
+        const results = Array.from(
+            graph 
+                .v("ravi")
+                .out("knows")
+                .take(1)
+                .iterate(),
+        );
+        expect(results).toEqual([northflow]);
+        expect(getVertex).toHaveBeenCalledTimes(2) ;
+        expect(getVertex).not.toHaveBeenCalledWith("garvit") ;
+    });
 })

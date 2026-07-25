@@ -101,6 +101,26 @@ export class Query {
         return this;
 
     }
+    private *outgoingVertices(
+        items: Iterable<Vertex>,
+        label: string,
+
+    ): Generator<Vertex> {
+        for (const vertex of items){
+            const edges = this.graph.getOutgoingEdges(vertex.id);
+
+            for(const edge of edges){
+                if (edge.label !== label){
+                    continue ;
+                }
+                const target = this.graph.getVertex(edge.target);
+
+                if (target){
+                    yield target ;
+                }
+            }
+        }
+    }
     *iterate(): Generator<Vertex> {
         const firstStep = this.steps[0] ;
 
@@ -121,6 +141,10 @@ export class Query {
     let results: Iterable<Vertex> = startingVertices() ;
 
     for (const step of this.steps.slice(1)){
+        if(step.kind ==="out"){
+            results = this.outgoingVertices(results,step.label);
+            continue ;
+        }
         if (step.kind === "take"){
             results = takeFrom(results, step.count);
         }
