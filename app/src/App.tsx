@@ -1,5 +1,6 @@
 import "./App.css";
 import GraphCanvas from "./GraphCanvas";
+import {useState} from "react" ;
 
 const savedQueries = [
   'v("ravi").out("founded")',
@@ -14,6 +15,16 @@ const planSteps = [
 ];
 
 function App() {
+  const [step,setStep] = useState(0);
+  const lastStep = planSteps.length - 1 ;
+  const progress =(step/lastStep)*100 ;
+
+  function goBack(){
+    setStep((current) => Math.max(current - 1, 0));
+  }
+  function goForward(){
+    setStep((current) => Math.min(current + 1,lastStep)) ;
+  }
   return (
     <main>
       <header>
@@ -55,16 +66,16 @@ function App() {
         <aside>
           <h2>Query Plan</h2>
           <ol>
-            {planSteps.map((step,index)=>(
+            {planSteps.map((plan,index)=>(
               <li 
-              className={index === 0 ? "current" : undefined}
-              key={step.title}
+              className={index === step ? "current" : undefined}
+              key={plan.title}
               >
                 <span>0{index + 1}</span>
 
                 <div>
-                  <strong>{step.title}</strong>
-                  <code>{step.code}</code>
+                  <strong>{plan.title}</strong>
+                  <code>{plan.code}</code>
                 </div>
               </li>
             ))}
@@ -76,9 +87,27 @@ function App() {
         </aside>
       </section>
       <footer>
-        <button aria-label="Play">▶</button>
-        <div className="progress" />
-        <span>0 results</span>
+        <button
+        type="button"
+        aria-label="Previous Step"
+        disabled={step === 0}
+        onClick={goBack}
+        >
+          ←
+        </button>
+        <button
+        type="button"
+        aria-label="Next Step"
+        disabled ={step === lastStep}
+        onClick={goForward}
+        >
+          →
+        </button>
+        <span>{step+1}/{planSteps.length}</span>
+        <div className="progress">
+          <span style={{width:`${progress}%`}}></span>
+        </div>
+        <span>{step === lastStep ? "1 result ":"0 result"}</span>
       </footer>
     </main>
   );

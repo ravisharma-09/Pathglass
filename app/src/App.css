@@ -140,12 +140,7 @@ main >footer button {
 main > footer button:hover{
   font-size: 20px;
 }
-.progress{
-  height: 3px;
-  flex: 1;
-  border-radius: 5px ;
-  background:var(--faint) ;
-}
+
 .graph {
   overflow: hidden;
 }
@@ -245,4 +240,22 @@ main > footer button:hover{
 }
 .result strong{
   color: var(--orange);
+}
+.progress {
+  height: 3px;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 5px;
+  background: var(--faint);
+}
+.progress span{
+  display: block;
+  height: 100%;
+  background-color: var(--orange);
+  transition: width 1s ease;
+
+}
+main > footer button:disabled{
+  cursor: not-allowed;
+  opacity: 0.3;
 }
