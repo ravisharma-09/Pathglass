@@ -80,31 +80,104 @@ main > header{
   background: #0c1517;
 
 }
+.workspace >section > h2,
+.workspace > aside > h2 ,
+.query-head{
+  display: flex;
+  height: 50px;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 2px solid #1e282a;
+}
+.workspace >aside:first-child{
+  display: flex;
+  flex-direction: column;
+}
+.query-head{
+  justify-content: space-between;
+}
+.query-head h2{
+  height: auto;
+  padding: 0;
+  border:  0;
+}
+.query-head button{
+  border: 0;
+  color: #829092;
+  background-color: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}
+.query-menu {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+}
+.query-menu button{
+  display: grid;
+  grid-template-columns: 24px minmax(0,1fr);
+  gap: 6px;
+  padding: 11px 9px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #8c9a9c;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+}
+.query-menu button > span {
+  color: #536163;
+  font-size: 10px;
+}
+.query-menu code {
+  overflow:hidden;
+  font-size: 11px;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
+.query-menu .active {
+  border-color: #273234 ;
+  color: #c9f7ee;
+  background: #10201f;
+}
+.data-box{
+  display: grid;
+  gap: 7px;
+  margin: auto 14px 14px;
+  border: 1px solid #1f2c1f;
+  border-radius: 8px;
+  font-size: 12px;
+  padding: 20px;
+}
+.data-box span {
+  color: #718082;
+  font-size: 11px;
+}
 main >footer {
   display: flex ;
   align-items: center;
   gap: 16px;
   padding: 0 20px;
   border-top: 1px solid #202a2c;
-  color: #000000;
+  color: #718082;
   font-size: 16px;
 }
 main >footer button {
   background: #10201f;
   width: 35px;
   height: 36px;
-  border: 5px solid #315653;
-  color: #55e6a5;
-  transition: font-size 0.2s ease;
+  border: 2px solid #cf7d1f;
+  color: #cf7d1f;
+  transition: font-size 0.1s ease;
 }
 main > footer button:hover{
   font-size: 20px;
-  color: white;
-  border: none;
+  /* color: white;
+  border: none; */
 }
 .progress{
   height: 3px;
   flex: 1;
   border-radius: 5px ;
-  background:#273234 ;
+  background:#536163 ;
 }
