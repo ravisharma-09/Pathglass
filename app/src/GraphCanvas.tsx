@@ -12,11 +12,13 @@ type GraphEdge = {
     label: string;
 };
 type GraphCanvasProps ={
-    activeStep : number ;
+    activeStage : ReplayStage ;
     startNode: string ;
     activeEdge:string ;
-    resultNode: string ;
+    resultNodes: string[] ;
 };
+
+export type ReplayStage = "start" | "edge" | "take" | "result" ;
 
 const nodes: GraphNode[] = [
     { id: "ravi", name: "Ravi", type: "person", x: 170, y: 265 },
@@ -57,12 +59,12 @@ const edges: GraphEdge[] = [
     { from: "ravi", to: "meera", label: "knows"},
 ];
 function GraphCanvas({
-    activeStep,
+    activeStage,
     startNode ,
     activeEdge,
-    resultNode,
+    resultNodes,
 }:GraphCanvasProps) {
-    const activeNode = activeStep === 0 ? startNode : activeStep === 2 ? resultNode :null ;
+    const activeNodes = activeStage === "start" ? [startNode] : activeStage === "result" ? resultNodes :[] ;
     return (
         <svg
             viewBox="0 0 800 480"
@@ -78,7 +80,7 @@ function GraphCanvas({
                 const middleX = (start.x + end.x) / 2 ;
                 const middleY = (start.y + end.y) / 2 ;
                 const isActive = 
-                edge.label === activeEdge && activeStep === 1;
+                edge.label === activeEdge && activeStage === "edge";
 
                 return (
                     <g 
@@ -107,7 +109,7 @@ function GraphCanvas({
             })}
             {nodes.map((node) => (
                 <g
-                    className={node.id === activeNode ? "active-node" : undefined}
+                    className={ activeNodes.includes(node.id) ? "active-node" : undefined}
                     key={node.id}
                     transform={`translate(${node.x} ${node.y})`}
                 >

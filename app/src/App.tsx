@@ -1,22 +1,46 @@
 import "./App.css";
-import GraphCanvas from "./GraphCanvas";
+import GraphCanvas , {type ReplayStage} from "./GraphCanvas";
 import {useState} from "react" ;
 
-const savedQueries = [
+type SavedQuery ={
+  text: string ;
+  start: string;
+  edge:string;
+  take?:number ;
+  results: string[];
+  resultNames: string[];
+};
+type PlanStep = {
+  kind: ReplayStage ;
+  title: string ;
+  code: string ;
+
+};
+
+const savedQueries: SavedQuery[] = [
   {
     text: 'v("ravi").out("founded")',
     start: "ravi",
     edge:"founded",
-    result:"northflow",
-    resultName:"NorthFlow",
+    results:["northflow"],
+    resultNames :["NorthFlow"],
   },
   {
     text: 'v("northflow").out("serves")',
     start: "northflow",
     edge:"serves",
-    result: "city-clinic",
-    resultName: "City Clinic",
+    results: ["city-clinic"],
+    resultNames:["City Clinic"],
+
   },
+  {
+    text:'v("ravi").out("knows").take(2)',
+    start:"ravi",
+    edge:"knows",
+    take:2,
+    results:["garvit","meera"],
+    resultNames:["Garvit","Meera"],
+  }
 
 ];
 
@@ -26,11 +50,35 @@ function App() {
   const [step,setStep] = useState(0);
   const query = savedQueries[queryIndex];
 
-  const planSteps =[
-    { title: "Start", code: `v("${query.start}")`},
-    { title: "Follow edge", code: `out("${query.edge}")` },
-    {title: "Return vertex", code: query.resultName},
+  const planSteps: PlanStep[] =[
+    {
+      kind : "start",
+      title: "Start",
+      code: `v("${query.start}")`,
+    },
+    {
+      kind:"edge",
+      title:"Follow edge",
+      code:`out("${query.edge}")`,
+
+    },
+    ...(query.take === undefined
+      ? []
+      : [
+        {
+          kind: "take" as const ,
+          title: "Limit results",
+          code: `take(${query.take})`,
+        },
+      ]),
+      {
+        kind: "result",
+        title: query.results.length === 1? "Return vertex":"Return vertices",
+        code: query.resultNames.join(", ")
+          
+      }
   ];
+  const activeStage = planSteps[step]?.kind ?? "start" ;
   const lastStep = planSteps.length - 1 ;
   const progress =(step/lastStep)*100 ;
 
@@ -82,10 +130,10 @@ function App() {
         <section className="graph">
           <h2>Graph canvas</h2>
           <GraphCanvas 
-          activeStep={step}
+          activeStage={activeStage}
           startNode={query.start}
           activeEdge={query.edge}
-          resultNode={query.result}
+          resultNodes={query.results}
           />
         </section>
         <aside>
@@ -107,7 +155,7 @@ function App() {
           </ol>
           <div className="result">
             <small>Result</small>
-            <strong>{step === lastStep ? query.resultName:"-"}</strong>
+            <strong>{step === lastStep ? query.resultNames.join(", ") : "-" }</strong>
           </div>
         </aside>
       </section>
@@ -132,10 +180,10 @@ function App() {
         <div className="progress">
           <span style={{width:`${progress}%`}}></span>
         </div>
-        <span>{step === lastStep ? "1 result ":"0 results"}</span>
+        <span>{step === lastStep ? `${query.results.length} ${query.results.length === 1 ? "result": "results"}`:"0 results"}</span>
       </footer>
     </main>
-b
+
   );
 } 
 export default App
