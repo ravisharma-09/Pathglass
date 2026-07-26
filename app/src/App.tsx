@@ -3,19 +3,34 @@ import GraphCanvas from "./GraphCanvas";
 import {useState} from "react" ;
 
 const savedQueries = [
-  'v("ravi").out("founded")',
-  'v("northflow").out("serves")',
-  'v("ravi").out("knows").take(2)',
+  {
+    text: 'v("ravi").out("founded")',
+    start: "ravi",
+    edge:"founded",
+    result:"northflow",
+    resultName:"NorthFlow",
+  },
+  {
+    text: 'v("ravi").out("founded")',
+    start: "northflow",
+    edge:"serves",
+    result: "city-clinic",
+    resultName: "City Clinic",
+  },
 
 ];
-const planSteps = [
-  { title: "Start", code:'v("ravi")'},
-  { title: "Follow edge", code: 'out("founded")'},
-  { title: "Return vertex", code: "NorthFlow"},
-];
+
 
 function App() {
+  const [queryIndex, setQueryIndex] = useState(0) ;
   const [step,setStep] = useState(0);
+  const query = savedQueries[queryIndex];
+
+  const planSteps =[
+    { title: "Start", code: `v("${query.start}")`},
+    { title: "Follow edge", code: `out("${query.edge}")` },
+    {title: "Return vertex", code: query.resultName},
+  ];
   const lastStep = planSteps.length - 1 ;
   const progress =(step/lastStep)*100 ;
 
@@ -25,11 +40,15 @@ function App() {
   function goForward(){
     setStep((current) => Math.min(current + 1,lastStep)) ;
   }
+  function chooseQuery(index: number){
+    setQueryIndex(index);
+    setStep(0);
+  }
   return (
     <main>
       <header>
         <div className="app-name">
-          <strong>PathGlass</strong>
+          <strong>Pathglass</strong>
           
         </div>
 
@@ -44,13 +63,14 @@ function App() {
           </button>
           </div>
           <nav className="query-menu" aria-label="Saved queries">
-            {savedQueries.map((query, index) =>(
+            {savedQueries.map((savedQuery, index) =>(
               <button
-              className={index === 0 ? "active" : undefined}
+              className={index === queryIndex ? "active" : undefined}
               type="button"
-              key={query}
+              key={savedQuery.text}
+              onClick={() => chooseQuery(index)}
               ><span>0{index+1}</span>
-              <code>{query}</code>
+              <code>{savedQuery.text}</code>
               </button>
             ))}
           </nav>
@@ -61,7 +81,12 @@ function App() {
         </aside>
         <section className="graph">
           <h2>Graph canvas</h2>
-          <GraphCanvas activeStep={step}/>
+          <GraphCanvas 
+          activeStep={step}
+          startNode={query.start}
+          activeEdge={query.edge}
+          resultNode={query.result}
+          />
         </section>
         <aside>
           <h2>Query Plan</h2>
@@ -82,7 +107,7 @@ function App() {
           </ol>
           <div className="result">
             <small>Result</small>
-            <strong>{step === lastStep ? "Northflow":"-"}</strong>
+            <strong>{step === lastStep ? query.resultName:"-"}</strong>
           </div>
         </aside>
       </section>
