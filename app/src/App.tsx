@@ -7,6 +7,11 @@ const savedQueries = [
   'v("ravi").out("knows").take(2)',
 
 ];
+const planSteps = [
+  { title: "Start", code:'v("ravi")'},
+  { title: "Follow edge", code: 'out("founded")'},
+  { title: "Return vertex", code: "NorthFlow"},
+];
 
 function App() {
   return (
@@ -49,6 +54,25 @@ function App() {
         </section>
         <aside>
           <h2>Query Plan</h2>
+          <ol>
+            {planSteps.map((step,index)=>(
+              <li 
+              className={index === 0 ? "current" : undefined}
+              key={step.title}
+              >
+                <span>0{index + 1}</span>
+
+                <div>
+                  <strong>{step.title}</strong>
+                  <code>{step.code}</code>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <div className="result">
+            <small>Result</small>
+            <strong>NorthFlow</strong>
+          </div>
         </aside>
       </section>
       <footer>

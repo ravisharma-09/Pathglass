@@ -192,4 +192,57 @@ main > footer button:hover{
   stroke-width: 5px;
   paint-order: stroke;
 }
+.workspace >aside {
+  background: var(--panel--soft);
+}
+.workspace >aside:last-child{
+  display: flex;
+  flex-direction: column;
 
+}
+.workspace > aside:last-child {
+  margin: 0;
+  padding: 14px 18px;
+  list-style: none;
+}
+.workspace > aside:last-child li {
+  display: grid ;
+  grid-template-columns: 30px 1fr;
+  min-height: 72px;
+  color: var(--faint);
+}
+
+.workspace >aside:last-child li>span{
+  padding-top: 2px;
+  font-family: monospace;
+  font-size: 12px;
+}
+.workspace > aside:last-child li > div{
+  display: grid ;
+  align-content: start;
+  gap: 7px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid var(--border);
+}
+.workspace >aside:last-child li code {
+  color: var(--muted);
+  font-size: 12px;
+}
+.workspace >aside:last-child .current > span,
+.workspace >aside:last-child .current code {
+  color: var(--orange);
+}
+.result {
+  display: grid;
+  gap: 7px;
+  margin: auto 18px 18px;
+  padding: 14px;
+  border-top: 1px solid var(--border);
+}
+.result small{
+  color: var(--muted);
+  font-size: 11px;
+}
+.result strong{
+  color: var(--orange);
+}
