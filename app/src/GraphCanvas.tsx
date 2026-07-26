@@ -11,6 +11,10 @@ type GraphEdge = {
     to: string;
     label: string;
 };
+type GraphCanvasProps ={
+    activeStep : number ;
+};
+
 const nodes: GraphNode[] = [
     { id: "ravi", name: "Ravi", type: "person", x: 170, y: 265 },
     {
@@ -33,7 +37,8 @@ const edges: GraphEdge[] = [
     { from: "ravi", to: "northflow", label: "founded" },
     { from: "northflow", to: "city-clinic", label: "serves" },
 ];
-function GraphCanvas() {
+function GraphCanvas({activeStep}:GraphCanvasProps) {
+    const activeNode = activeStep === 0 ? "ravi" : activeStep === 2 ? "northflow" :null ;
     return (
         <svg
             viewBox="0 0 800 480"
@@ -48,8 +53,13 @@ function GraphCanvas() {
                 }
                 const middleX = (start.x + end.x) / 2 ;
                 const middleY = (start.y + end.y) / 2 ;
+                const isActive = edge.label === "founded" && activeStep === 1;
+
                 return (
-                    <g key={`${edge.from}-${edge.to}`} >
+                    <g 
+                        className={isActive ? "active-edge":undefined}
+                        key={`${edge.from}-${edge.to}`}
+                     >
                         <line
                             x1={start.x}
                             y1={start.y}
@@ -67,10 +77,12 @@ function GraphCanvas() {
                             {edge.label}
                         </text>
                     </g>
+
                 );
             })}
             {nodes.map((node) => (
                 <g
+                    className={node.id === activeNode ? "active-node" : undefined}
                     key={node.id}
                     transform={`translate(${node.x} ${node.y})`}
                 >

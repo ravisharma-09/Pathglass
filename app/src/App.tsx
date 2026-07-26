@@ -56,12 +56,12 @@ function App() {
           </nav>
           <div className="data-box">
             <strong>Demo dataset</strong>
-            <span>5 vertices · 4 edges</span>
+            <span>3 vertices · 2 edges</span>
           </div>
         </aside>
         <section className="graph">
           <h2>Graph canvas</h2>
-          <GraphCanvas />
+          <GraphCanvas activeStep={step}/>
         </section>
         <aside>
           <h2>Query Plan</h2>
@@ -82,7 +82,7 @@ function App() {
           </ol>
           <div className="result">
             <small>Result</small>
-            <strong>NorthFlow</strong>
+            <strong>{step === lastStep ? "Northflow":"-"}</strong>
           </div>
         </aside>
       </section>
@@ -107,7 +107,7 @@ function App() {
         <div className="progress">
           <span style={{width:`${progress}%`}}></span>
         </div>
-        <span>{step === lastStep ? "1 result ":"0 result"}</span>
+        <span>{step === lastStep ? "1 result ":"0 results"}</span>
       </footer>
     </main>
   );

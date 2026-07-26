@@ -105,7 +105,7 @@ main > header{
 .query-menu .active {
   border-color: var(--border);
   color: var(--text);
-  background: var(--panel--soft);
+  background: var(--panel-soft);
 }
 .data-box{
   display: grid;
@@ -130,7 +130,7 @@ main >footer {
   font-size: 16px;
 }
 main >footer button {
-  background: var(--panel--soft);
+  background: var(--panel-soft);
   width: 35px;
   height: 36px;
   border: 2px solid var(--orange);
@@ -158,12 +158,10 @@ main > footer button:hover{
   stroke: var(--edge);
   stroke-width: 2;
 }
-.graph marker path{
-  fill: var(--orange);
-}
+
 .graph circle{
   fill:var(--panel);
-  stroke: var(--orange);
+  stroke: var(--edge);
   stroke-width: 2;
 }
 .graph g text{
@@ -179,7 +177,8 @@ main > footer button:hover{
   font-weight: normal;
 }
 .graph .edge-name {
-  fill: var(--orange);
+  fill: var(--muted);
+
   font-family: monospace;
   font-size: 12px;
   text-anchor: middle;
@@ -187,15 +186,26 @@ main > footer button:hover{
   stroke-width: 5px;
   paint-order: stroke;
 }
+.graph .active-edge line {
+  stroke-width: 3;
+  stroke: var(--orange);
+}
+.graph .active-edge .edge-name{
+  fill: var(--orange);
+}
+.graph .active-node circle{
+  stroke: var(--orange);
+  stroke-width: 4;
+}
 .workspace >aside {
-  background: var(--panel--soft);
+  background: var(--panel-soft);
 }
 .workspace >aside:last-child{
   display: flex;
   flex-direction: column;
 
 }
-.workspace > aside:last-child {
+.workspace > aside:last-child ol {
   margin: 0;
   padding: 14px 18px;
   list-style: none;
@@ -221,6 +231,10 @@ main > footer button:hover{
 }
 .workspace >aside:last-child li code {
   color: var(--muted);
+  font-size: 12px;
+}
+.workspace >aside :last-child li strong {
+  color: var(--text);
   font-size: 12px;
 }
 .workspace >aside:last-child .current > span,
