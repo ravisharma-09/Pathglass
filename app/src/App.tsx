@@ -12,16 +12,10 @@ function App() {
   return (
     <main>
       <header>
-        <div className="brand">
-          <span>p</span>
-          <div>
-            <strong>Pathglass</strong>
-            <small>Graph execution explorer</small>
-          </div>
+        <div className="app-name">
+          <strong>PathGlass</strong>
+          
         </div>
-        <div className="engine">
-          <span />Engine ready to explore
-           </div>
 
       </header>
       <section className="workspace">

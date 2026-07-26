@@ -85,4 +85,3 @@ function GraphCanvas() {
     );
 }
 export default GraphCanvas;
-

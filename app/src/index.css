@@ -5,6 +5,18 @@
 font-family: Arial, Helvetica, sans-serif;
 color: white;
 background: black;
+--page: #11100f;
+--panel:#171513 ;
+--panel-soft: #1e1b18 ;
+--border: #302c27;
+--grid:#24211e;
+--text:#ece4da ;
+--muted:#938b82;
+--faint:#655f58;
+--edge:#756e66;
+--orange: #cf7d1f ;
+color: var(--text);
+background: var(--page);
 }
 
 body {

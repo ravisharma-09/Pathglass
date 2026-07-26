@@ -5,70 +5,37 @@ main {
   display:grid;
   grid-template-rows: 64px 1fr 70px;
   min-height: 100vh;
-  background: #141f25;
+  background: var(--page);
 }
 main > header{
   display: flex;
   align-items: center;
   padding: 0 20px;
-  border-bottom: 3px solid #253032;
+  border-bottom: 3px solid var(--border);
 }
-.brand {
+.app-name {
   display: flex;
-  align-items: center;
-  gap: 11px;
+  align-items: baseline;
+  gap: 9px;
 }
-.brand > span {
-  display: grid;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  border: 1px solid #cf7d1f;
-  border-radius: 10px;
-  color: #cf7d1f;
-  font-family: monospace;
-  font-weight: bold;
-  font-size: large;
+.app-name strong{
+  color: var(--orange);
+  font-size: 30px;
+}
 
-}
-.brand div {
-  display: grid;
-  gap: 5px;
-  font-size: 20px;
-}
-.brand strong {
-  color: #cf7d1f;
-}
-.brand small {
-  color: #718082;
-  font-size: 11px;
-}
-.engine{
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-left: auto;
-  color: #829092;
-  font-size: 12px;
-}
-.engine > span {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: #55e6a5;
-}
+
 .workspace {
   display: grid;
   grid-template-columns: 240px 1fr 280px;
   gap: 4px;
-  background: #202a2c;
+  background: var(--border);
 }
 .workspace h2 {
   height: 48px;
   margin: 0;
   padding: 20px 20px;
-  border-bottom: 2px solid #1e282a;
-  color: #829092;
+  border-bottom: 2px solid var(--border);
+  color: var(--muted);
   font-size: 15px;
   letter-spacing: 3px;
   text-transform: uppercase;
@@ -77,7 +44,7 @@ main > header{
 }
 
 .workspace .graph {
-  background: #0c1517;
+  background: var(--panel);
 
 }
 .workspace >section > h2,
@@ -87,7 +54,7 @@ main > header{
   height: 50px;
   align-items: center;
   padding: 0 20px;
-  border-bottom: 2px solid #1e282a;
+  border-bottom: 2px solid var(--border);
 }
 .workspace >aside:first-child{
   display: flex;
@@ -103,7 +70,7 @@ main > header{
 }
 .query-head button{
   border: 0;
-  color: #829092;
+  color: var(--muted);
   background-color: transparent;
   font-size: 20px;
   cursor: pointer;
@@ -120,13 +87,13 @@ main > header{
   padding: 11px 9px;
   border: 1px solid transparent;
   border-radius: 10px;
-  color: #8c9a9c;
+  color: var(--muted);
   text-align: left;
   cursor: pointer;
   background: transparent;
 }
 .query-menu button > span {
-  color: #536163;
+  color: var(--faint);
   font-size: 10px;
 }
 .query-menu code {
@@ -136,21 +103,21 @@ main > header{
   white-space: nowrap;
 }
 .query-menu .active {
-  border-color: #273234 ;
-  color: #c9f7ee;
-  background: #10201f;
+  border-color: var(--border);
+  color: var(--text);
+  background: var(--panel--soft);
 }
 .data-box{
   display: grid;
   gap: 7px;
   margin: auto 14px 14px;
-  border: 1px solid #1f2c1f;
+  border: 1px solid var(--border) ;
   border-radius: 8px;
   font-size: 12px;
   padding: 20px;
 }
 .data-box span {
-  color: #718082;
+  color: var(--muted);
   font-size: 11px;
 }
 main >footer {
@@ -158,16 +125,16 @@ main >footer {
   align-items: center;
   gap: 16px;
   padding: 0 20px;
-  border-top: 1px solid #202a2c;
-  color: #718082;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
   font-size: 16px;
 }
 main >footer button {
-  background: #10201f;
+  background: var(--panel--soft);
   width: 35px;
   height: 36px;
-  border: 2px solid #cf7d1f;
-  color: #cf7d1f;
+  border: 2px solid var(--orange);
+  color: var(--orange);
   transition: font-size 0.1s ease;
 }
 main > footer button:hover{
@@ -177,7 +144,7 @@ main > footer button:hover{
   height: 3px;
   flex: 1;
   border-radius: 5px ;
-  background:#536163 ;
+  background:var(--faint) ;
 }
 .graph {
   overflow: hidden;
@@ -188,40 +155,40 @@ main > footer button:hover{
   height: calc(100% - 50px);
   min-height: 480px;
   background-image:
-  linear-gradient(#1a292c 1px, transparent 1px),
-  linear-gradient(90deg, #1a292c 1px, transparent 1px) ;
+  linear-gradient(var(--grid) 1px, transparent 1px),
+  linear-gradient(90deg, var(--grid) 1px, transparent 1px) ;
   background-size: 32px 32px;
 }
 .graph line{
-  stroke: #667476;
+  stroke: var(--edge);
   stroke-width: 2;
 }
 .graph marker path{
-  fill: #cf7d1f;
+  fill: var(--orange);
 }
 .graph circle{
-  fill: #101c1f;
-  stroke: #cf7d1f;
+  fill:var(--panel);
+  stroke: var(--orange);
   stroke-width: 2;
 }
 .graph g text{
-  fill: white;
+  fill: var(--text);
   font-size: 13px;
   font-weight: normal;
   text-anchor: middle;
 
 }
 .graph .node-type{
-  fill: #718082;
+  fill: var(--muted);
   font-size: 12px;
   font-weight: normal;
 }
 .graph .edge-name {
-  fill: #cf7d1f;
+  fill: var(--orange);
   font-family: monospace;
   font-size: 12px;
   text-anchor: middle;
-  stroke: #0c1517;
+  stroke: var(--panel) ;
   stroke-width: 5px;
   paint-order: stroke;
 }
