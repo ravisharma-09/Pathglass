@@ -1,4 +1,5 @@
 import "./App.css";
+import GraphCanvas from "./GraphCanvas";
 
 const savedQueries = [
   'v("ravi").out("founded")',
@@ -50,6 +51,7 @@ function App() {
         </aside>
         <section className="graph">
           <h2>Graph canvas</h2>
+          <GraphCanvas />
         </section>
         <aside>
           <h2>Query Plan</h2>

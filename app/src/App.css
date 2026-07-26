@@ -172,8 +172,6 @@ main >footer button {
 }
 main > footer button:hover{
   font-size: 20px;
-  /* color: white;
-  border: none; */
 }
 .progress{
   height: 3px;
@@ -181,3 +179,50 @@ main > footer button:hover{
   border-radius: 5px ;
   background:#536163 ;
 }
+.graph {
+  overflow: hidden;
+}
+.graph svg {
+  display: block;
+  width: 100%;
+  height: calc(100% - 50px);
+  min-height: 480px;
+  background-image:
+  linear-gradient(#1a292c 1px, transparent 1px),
+  linear-gradient(90deg, #1a292c 1px, transparent 1px) ;
+  background-size: 32px 32px;
+}
+.graph line{
+  stroke: #667476;
+  stroke-width: 2;
+}
+.graph marker path{
+  fill: #cf7d1f;
+}
+.graph circle{
+  fill: #101c1f;
+  stroke: #cf7d1f;
+  stroke-width: 2;
+}
+.graph g text{
+  fill: white;
+  font-size: 13px;
+  font-weight: normal;
+  text-anchor: middle;
+
+}
+.graph .node-type{
+  fill: #718082;
+  font-size: 12px;
+  font-weight: normal;
+}
+.graph .edge-name {
+  fill: #cf7d1f;
+  font-family: monospace;
+  font-size: 12px;
+  text-anchor: middle;
+  stroke: #0c1517;
+  stroke-width: 5px;
+  paint-order: stroke;
+}
+
