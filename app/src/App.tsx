@@ -11,7 +11,7 @@ const savedQueries = [
     resultName:"NorthFlow",
   },
   {
-    text: 'v("ravi").out("founded")',
+    text: 'v("northflow").out("serves")',
     start: "northflow",
     edge:"serves",
     result: "city-clinic",
@@ -76,7 +76,7 @@ function App() {
           </nav>
           <div className="data-box">
             <strong>Demo dataset</strong>
-            <span>3 vertices · 2 edges</span>
+            <span>5 vertices · 4 edges</span>
           </div>
         </aside>
         <section className="graph">
@@ -135,6 +135,7 @@ function App() {
         <span>{step === lastStep ? "1 result ":"0 results"}</span>
       </footer>
     </main>
+b
   );
-}
+} 
 export default App
