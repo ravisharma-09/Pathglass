@@ -1,7 +1,7 @@
 import "./App.css";
 import GraphCanvas , {type ReplayStage} from "./GraphCanvas";
-import {useState} from "react" ;
-import { demoEdges, demoNodes } from "./graphData";
+import {useState , type FormEvent } from "react" ;
+import { demoEdges, demoNodes, type GraphEdge, type GraphNode } from "./graphData";
 
 type SavedQuery ={
   text: string ;
@@ -44,12 +44,22 @@ const savedQueries: SavedQuery[] = [
   }
 
 ];
+function getNodePosition(index: number){
+  const column = index%4 ;
+  const row = Math.floor(index/4);
+  return {
+    x: 100 + column * 200,
+    y:120 + row * 180 ,
+  };
+}
 
 
 function App() {
   const [queryIndex, setQueryIndex] = useState(0) ;
   const [step,setStep] = useState(0);
   const query = savedQueries[queryIndex];
+  const [nodes, setNodes] = useState<GraphNode[]>(demoNodes) ;
+  const [edges, setEdges] = useState<GraphEdge[]>(demoEdges) ;
 
   const planSteps: PlanStep[] =[
     {
@@ -83,6 +93,15 @@ function App() {
   const lastStep = planSteps.length - 1 ;
   const progress =(step/lastStep)*100 ;
 
+  const [showVertexform, setShowVertexForm] = useState(false) ;
+
+  const [vertexDraft, setVertexDraft] = useState({
+    id: "",
+    name: "",
+    type: "",
+  });
+  const [vertexError, setVertexError] = useState("") ;
+
   function goBack(){
     setStep((current) => Math.max(current - 1, 0));
   }
@@ -92,7 +111,64 @@ function App() {
   function chooseQuery(index: number){
     setQueryIndex(index);
     setStep(0);
+
   }
+  function startNewGraph(){
+    setNodes([]) ;
+    setEdges([]);
+    setStep(0) ;
+    setShowVertexForm(true) ;
+    setVertexError("");
+  }
+  function loadDemoGraph() {
+    setNodes(demoNodes.map((node)=> ({...node})));
+    setEdges(demoEdges.map((edge) => ({...edge})));
+    setQueryIndex(0) ;
+    setStep(0);
+    setShowVertexForm(false);
+    setVertexError("");
+
+  }
+
+  function addVertex(event: FormEvent<HTMLFormElement>){
+    event.preventDefault() ;
+    const id = vertexDraft.id
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+    const name = vertexDraft.name.trim();
+    const type = vertexDraft.type.trim()
+
+    if(!id || !name || !type){
+      setVertexError("Complete all three fields");
+      return ;
+    }
+    if(nodes.some((node) => node.id ===id)){
+      setVertexError("That vertex ID already exists");
+      return ;
+
+    }
+    const position = getNodePosition(nodes.length);
+
+    setNodes((current)=>[
+      ...current,
+      {
+        id,
+        name,
+        type,
+        ...position ,
+      },
+    ]);
+
+    setVertexDraft({
+      id: "",
+      name:"",
+      type: "",
+    });
+    setVertexError("");
+    setStep(0);
+  }
+
   return (
     <main>
       <header>
@@ -124,15 +200,80 @@ function App() {
             ))}
           </nav>
           <div className="data-box">
-            <strong>Demo dataset</strong>
-            <span>{demoNodes.length} vertices | {demoEdges.length} edges</span>
+            <strong> {nodes.length === 0 ? "Empty graph" :"Current graph"}</strong>
+            <span>{nodes.length} vertices | {edges.length} edges</span>
+            <div className="data-action">
+              <button
+              className="add-node"
+              type="button"
+              onClick={() => setShowVertexForm((current) => !current)}
+              >
+                {showVertexform ? "Close editor" :"+ Add vertexd"}
+              </button>
+            <button type="button" onClick={startNewGraph}>
+              New graph
+            </button>
+            <button type="button" onClick={loadDemoGraph}>
+              Load demo
+            </button>
           </div>
+          {showVertexform && (
+            <form className="vertex-form" onSubmit={addVertex}>
+              <label>
+                Vertex ID
+                <input 
+                value={vertexDraft.id}
+                onChange={(event) => 
+                  setVertexDraft({
+                    ...vertexDraft,
+                    id:event.target.value,
+                  })
+                }
+                placeholder="payment-api"
+                />
+
+              </label>
+              <label>
+              Name 
+              <input 
+              value={vertexDraft.name}
+              onChange={(event) =>
+                setVertexDraft({
+                  ...vertexDraft,
+                  name: event.target.value ,
+                })
+              }
+              placeholder="Payment API"
+              />
+              </label>
+              <label>
+                Type 
+                <input
+                value={vertexDraft.type}
+                onChange={(event) =>
+                  setVertexDraft({
+                    ...vertexDraft,
+                    type : event.target.value ,
+                  })
+                }
+                placeholder="service"
+                />
+              </label>
+
+              {vertexError && (
+                <small className="form-error">{vertexError}</small>
+              )}
+              <button type="submit" > Add to graph</button>
+            </form>
+          )}
+          </div>
+          
         </aside>
         <section className="graph">
           <h2>Graph canvas</h2>
           <GraphCanvas 
-          nodes={demoNodes}
-          edges={demoEdges}
+          nodes={nodes}
+          edges={edges}
           activeStage={activeStage}
           startNode={query.start}
           activeEdge={query.edge}

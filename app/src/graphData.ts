@@ -32,7 +32,7 @@ export const demoNodes: GraphNode[] = [
        name: "City Clinic",
        type: "client",
        x: 620,
-       y: 400,
+       y: 265,
     },
     {
         id: "garvit",
@@ -58,8 +58,8 @@ export const demoEdges: GraphEdge[] =[
     },
     {
         from: "northflow",
-        to:"citu-clinic",
-        label:"serves",
+        to:"city-clinic",
+        label: "serves",
     },
     {
         from:"ravi",

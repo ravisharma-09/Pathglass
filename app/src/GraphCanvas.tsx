@@ -24,8 +24,13 @@ function GraphCanvas({
         <svg
             viewBox="0 0 800 480"
             role="img"
-            aria-label="Pathglass demo graph"
+            aria-label="Pathglass graph canvas"
         >
+            {nodes.length === 0 && (
+                <text className="empty-graph" x ="400" y="240">
+                    Add your first vertex
+                </text>
+            )}
             {edges.map((edge) => {
                 const start = nodes.find((node) => node.id === edge.from);
                 const end = nodes.find((node) => node.id === edge.to);
