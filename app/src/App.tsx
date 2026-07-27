@@ -1,6 +1,7 @@
 import "./App.css";
 import GraphCanvas , {type ReplayStage} from "./GraphCanvas";
 import {useState} from "react" ;
+import { demoEdges, demoNodes } from "./graphData";
 
 type SavedQuery ={
   text: string ;
@@ -124,12 +125,14 @@ function App() {
           </nav>
           <div className="data-box">
             <strong>Demo dataset</strong>
-            <span>5 vertices · 4 edges</span>
+            <span>{demoNodes.length} vertices | {demoEdges.length} edges</span>
           </div>
         </aside>
         <section className="graph">
           <h2>Graph canvas</h2>
           <GraphCanvas 
+          nodes={demoNodes}
+          edges={demoEdges}
           activeStage={activeStage}
           startNode={query.start}
           activeEdge={query.edge}

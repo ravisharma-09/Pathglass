@@ -1,17 +1,8 @@
-type GraphNode = {
-    id: string;
-    name: string;
-    type: string;
-    x: number;
-    y: number;
+import type { GraphEdge, GraphNode } from "./graphData";
 
-};
-type GraphEdge = {
-    from: string;
-    to: string;
-    label: string;
-};
 type GraphCanvasProps ={
+    nodes: GraphNode[];
+    edges: GraphEdge[];
     activeStage : ReplayStage ;
     startNode: string ;
     activeEdge:string ;
@@ -20,45 +11,9 @@ type GraphCanvasProps ={
 
 export type ReplayStage = "start" | "edge" | "take" | "result" ;
 
-const nodes: GraphNode[] = [
-    { id: "ravi", name: "Ravi", type: "person", x: 170, y: 265 },
-    {
-        id: "northflow",
-        name: "NorthFlow",
-        type: "company",
-        x: 390,
-        y: 155,
-    },
-    {
-        id: "city-clinic",
-        name: "City Clinic",
-        type: "client",
-        x: 620,
-        y: 265,
-    },
-    {
-        id:"garvit",
-        name:"Garvit",
-        type:"person",
-        x:110,
-        y:400,
-    },
-    {
-        id:"meera",
-        name:"Meera",
-        type: "person",
-        x:330,
-        y:400,
-    }
-
-];
-const edges: GraphEdge[] = [
-    { from: "ravi", to: "northflow", label: "founded" },
-    { from: "northflow", to: "city-clinic", label: "serves" },
-    { from: "ravi", to: "garvit", label:"knows"},
-    { from: "ravi", to: "meera", label: "knows"},
-];
 function GraphCanvas({
+    nodes,
+    edges,
     activeStage,
     startNode ,
     activeEdge,
