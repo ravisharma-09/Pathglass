@@ -42,7 +42,7 @@ main > header{
 
 
 }
-.from-error{
+.form-error{
   color:var(--orange);
   font-size: 12px;
 }
@@ -376,4 +376,41 @@ color: var(--orange);
 }
 .graph .selected-edge .edge-name {
   fill: var(--text);
+}
+
+.new-query{
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+
+}
+.new-query label{
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.new-query input ,
+.new-query select{
+  width: 100%;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  outline: none;
+  color: var(--text);
+  background-color: var(--page);
+  font-size: 10px;
+}
+.new-query input:focus,
+.new-query select:focus {
+  border-color: var(--orange);
+}
+.new-query button {
+  padding: 8px;
+  border: 1px solid var(--orange);
+  border-radius: 4px;
+  color: var(--orange);
+  background: transparent;
+  cursor: pointer;
 }

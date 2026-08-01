@@ -26,7 +26,7 @@ type SelectedGraphItem =
     key: string ;
    }
    | null ;
-const savedQueries: SavedQuery[] = [
+const startingQueries: SavedQuery[] = [
   {
     text: 'v("ravi").out("founded")',
     start: "ravi",
@@ -95,9 +95,18 @@ function App() {
 
   });
   const [edgeError, setEdgeError] = useState("") ;
+ const [savedQueries, setSavedQueries] = useState(startingQueries) ;
   const [queryIndex, setQueryIndex] = useState(0) ;
-  const [step,setStep] = useState(0);
-  const query = savedQueries[queryIndex];
+  const [step, setStep] = useState(0) ;
+  const [showQueryForm, setShowQueryForm] = useState(false) ;
+  const [queryDraft, setQueryDraft] = useState({
+    start:"",
+    edge:"",
+    take:"",
+  });
+  const [queryError, setQueryError] = useState("") ;
+  const query = savedQueries[queryIndex] ;
+
   const [nodes, setNodes] = useState<GraphNode[]>(demoNodes) ;
   const [edges, setEdges] = useState<GraphEdge[]>(demoEdges) ;
   const resultVertices = runSavedQuery(nodes, edges, query) ;
@@ -159,6 +168,47 @@ function App() {
     setQueryIndex(index);
     setStep(0);
 
+  }
+  function addQuery(event: FormEvent<HTMLFormElement>){
+    event.preventDefault();
+    const start = queryDraft.start ;
+    const edge = queryDraft.edge 
+     .trim()
+     .toLowerCase()
+     .replace(/\s+/g, "-") ;
+    if(!start || !edge){
+      setQueryError("Choose a start vertex and enter an edge label");
+      return ;
+    }
+    const takeText = queryDraft.take.trim() ;
+    const take = takeText === "" ? undefined : Number(takeText) ;
+
+    if(take !== undefined && (!Number.isInteger(take) || take <= 0)){
+      setQueryError("Limit must be zero or a positve whole number");
+      return ;
+    }
+    let text = `v("${start}").out("${edge}")` ;
+    if(take !== undefined){
+      text += `.take(${take})` ;
+    }
+    const newQuery: SavedQuery = {
+      text,
+      start,
+      edge,
+    };
+    if(take !== undefined){
+      newQuery.take = take ;
+    }
+    setSavedQueries((current) => [...current, newQuery]) ;
+    setQueryIndex(savedQueries.length) ;
+    setStep(0) ;
+    setShowQueryForm(false) ;
+    setQueryDraft({
+      start:"",
+      edge:"",
+      take:"",
+    });
+    setQueryError("") ;
   }
   function deleteSelectedItem(){
   if(!selectedItem){
@@ -236,7 +286,7 @@ function App() {
       to:"",
       label:"",
     });
-    setVertexError("");
+    setEdgeError("");
 
   }
   function toggleVertexForm(){
@@ -345,10 +395,67 @@ edge.label === label ,
           <div className="query-head">
           <h2>Queries</h2>
           
-          <button type="button" aria-label="Add Query">
-            +
+          <button type="button" aria-label="Add Query" disabled={nodes.length === 0} onClick={() => {
+            setShowQueryForm((current) => !current);
+            setQueryError("");
+          }}>
+            {showQueryForm ? "x" : "+"}
           </button>
           </div>
+          {showQueryForm && (
+            <form className="new-query" onSubmit={addQuery}>
+              <label>
+                Start vertex
+                <select
+                  value={queryDraft.start}
+                  onChange={(event) =>
+                    setQueryDraft({
+                      ...queryDraft,
+                      start: event.target.value,
+                    })
+                  }
+                >
+                  <option value="">Choose vertex</option>
+                  {nodes.map((node) => (
+                    <option key={node.id} value={node.id}>
+                      {node.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Edge label
+                <input
+                  value={queryDraft.edge}
+                  onChange={(event) =>
+                    setQueryDraft({
+                      ...queryDraft,
+                      edge: event.target.value,
+                    })
+                  }
+                />
+              </label>
+              <label>
+                Limit (optional)
+                <input
+                  type="number"
+                  min={0}
+                  step={1}
+                  value={queryDraft.take}
+                  onChange={(event) =>
+                    setQueryDraft({
+                      ...queryDraft,
+                      take: event.target.value,
+                    })
+                  }
+                />
+              </label>
+              {queryError && (
+                <small className="form-error">{queryError}</small>
+              )}
+              <button type="submit">Add query</button>
+            </form>
+          )}
           <nav className="query-menu" aria-label="Saved queries">
             {savedQueries.map((savedQuery, index) =>(
               <button
