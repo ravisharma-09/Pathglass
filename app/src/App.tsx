@@ -17,7 +17,16 @@ type PlanStep = {
   code: string ;
 
 };
-
+type SelectedGraphItem = 
+   | {
+    kind: "node" ;
+    id: string ;
+   }
+    | {
+    kind: "edge" ;
+    key: string ;
+   }
+   | null ;
 const savedQueries: SavedQuery[] = [
   {
     text: 'v("ravi").out("founded")',
@@ -54,7 +63,9 @@ function getNodePosition(index: number){
 }
 
 
+
 function App() {
+  const [selectedItem, setSelectedItem] = useState<SelectedGraphItem>(null) ;
 
   const [showEdgeForm ,setShowEdgeForm] = useState(false);
   const [edgeDraft, setEdgeDraft] = useState({
@@ -122,13 +133,54 @@ function App() {
     setStep(0);
 
   }
+  function deleteSelectedItem(){
+  if(!selectedItem){
+    return ;
+  }
+  if(selectedItem.kind === "node"){
+    setNodes((current) =>
+      current.filter((node) => node.id !== selectedItem.id)
+    );
+    setEdges((current) =>
+      current.filter(
+        (edge) =>
+          edge.from !== selectedItem.id && edge.to !== selectedItem.id
+      ),
+    );
+  }
+  if(selectedItem.kind === "edge"){
+    setEdges((current) =>
+      current.filter((edge)=>{
+        const edgeKey = `${edge.from}|${edge.label}|${edge.to}`;
+        return edgeKey !== selectedItem.key ; 
+      }),
+    );
+  }
+  setSelectedItem(null);
+  setEdgeDraft({
+    from:"",
+    to:"",
+    label:"",
+  });
+  setEdgeError("");
+  setStep(0);
+
+}
   function startNewGraph(){
     setNodes([]) ;
     setEdges([]);
     setStep(0) ;
+    setSelectedItem(null) ;
+
     setShowVertexForm(true) ;
-    setVertexError("");
     setShowEdgeForm(false);
+
+    setVertexDraft({
+      id:"",
+      name:"",
+      type:"",
+    });
+    setVertexError("");
     setEdgeDraft({
       from:"",
       to:"",
@@ -141,7 +193,22 @@ function App() {
     setEdges(demoEdges.map((edge) => ({...edge})));
     setQueryIndex(0) ;
     setStep(0);
+    setSelectedItem(null);
+
     setShowVertexForm(false);
+    setShowEdgeForm(false);
+
+    setVertexDraft({
+      id:"",
+      name:"",
+      type:"",
+    });
+    setVertexError("");
+    setEdgeDraft({
+      from:"",
+      to:"",
+      label:"",
+    });
     setVertexError("");
 
   }
@@ -297,6 +364,14 @@ edge.label === label ,
                   Load demo
                  </button>
           </div>
+          <button 
+          className = "delete-item"
+          type="button"
+          disabled={!selectedItem}
+          onClick={deleteSelectedItem}
+          >
+            {!selectedItem ? "Select a vertex or edge": selectedItem.kind === "node" ? "Delete vertex" : "Delete edge"}
+          </button>
           {showVertexform && (
             <form className="vertex-form" onSubmit={addVertex}>
               <label>
@@ -380,6 +455,25 @@ edge.label === label ,
 
                   />  
                   </label>
+                  <label>
+                    Target
+                    <select
+                    value={edgeDraft.to}
+                    onChange={(event) =>
+                      setEdgeDraft({
+                        ...edgeDraft,
+                        to:event.target.value,
+                      })
+                    }
+                    >
+                      <option value="">Choose target</option>
+                      {nodes.map((node) => (
+                        <option key={node.id} value={node.id}>
+                          {node.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                   {edgeError &&(
                     <small className="form-error">{edgeError}</small>
                   )}
@@ -398,6 +492,14 @@ edge.label === label ,
           startNode={query.start}
           activeEdge={query.edge}
           resultNodes={query.results}
+          selectedNode ={
+            selectedItem?.kind === "node" ? selectedItem.id : null
+          }
+          selectedEdge = {
+            selectedItem?.kind === "edge" ? selectedItem.key : null
+          }
+          onSelectNode = {(id) => setSelectedItem({kind:"node", id})}
+          onSelectEdge = {(key) => setSelectedItem({kind:"edge", key}) }
           />
         </section>
         <aside>

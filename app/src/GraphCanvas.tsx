@@ -7,6 +7,10 @@ type GraphCanvasProps ={
     startNode: string ;
     activeEdge:string ;
     resultNodes: string[] ;
+    selectedNode: string | null ;
+    selectedEdge: string | null ;
+    onSelectNode: (id:string) => void ;
+    onSelectEdge: (key:string) => void ;
 };
 
 export type ReplayStage = "start" | "edge" | "take" | "result" ;
@@ -18,6 +22,10 @@ function GraphCanvas({
     startNode ,
     activeEdge,
     resultNodes,
+    selectedNode,
+    selectedEdge,
+    onSelectNode,
+    onSelectEdge,
 }:GraphCanvasProps) {
     const activeNodes = activeStage === "start" ? [startNode] : activeStage === "result" ? resultNodes :[] ;
     return (
@@ -41,12 +49,20 @@ function GraphCanvas({
                 const middleY = (start.y + end.y) / 2 ;
                 const isActive = 
                 edge.label === activeEdge && activeStage === "edge";
+                const edgeKey = `${edge.from}|${edge.label}|${edge.to}` ;
+                const edgeClass = [ 
+                    isActive ? "active-edge" : "",
+                    edgeKey === selectedEdge ? "selected-edge" : "",
+                ]
+                .filter(Boolean)
+                .join(" ");
 
                 return (
                     <g 
-                        className={isActive ? "active-edge":undefined}
-                        key={`${edge.from}-${edge.label}-${edge.to}`}
-                     >
+                        className={edgeClass}
+                        key={edgeKey}
+                        onClick={() => onSelectEdge(edgeKey)}
+                    >
                         <line
                             x1={start.x}
                             y1={start.y}
@@ -64,23 +80,33 @@ function GraphCanvas({
                             {edge.label}
                         </text>
                     </g>
-
                 );
             })}
-            {nodes.map((node) => (
-                <g
-                    className={ activeNodes.includes(node.id) ? "active-node" : undefined}
-                    key={node.id}
-                    transform={`translate(${node.x} ${node.y})`}
-                >
-                    <circle r="38" />
-                    <text y="5">{node.name}</text>
-                    <text className="node-type" y="58">
-                        {node.type}
-                    </text>
-                </g>
-            ))}
+            {nodes.map((node) => {
+                
+                const nodeClass = [
+                    activeNodes.includes(node.id) ? "active-node" : "",
+                    node.id === selectedNode ? "selected-node" : "",
+                ]
+                .filter(Boolean)
+                .join(" ");
+                return (
+                    <g  key={node.id}
+                        className={nodeClass}
+                        transform={`translate(${node.x} ${node.y})`}
+                        onClick={() => onSelectNode(node.id)}
+                    >   
+                        <circle r="38" />
+                        <text y="5">{node.name}</text>
+                        <text className="node-type" y="58">
+                            {node.type}
+                        </text>
+                    </g>
+                );
+            })}
         </svg>
     );
 }
 export default GraphCanvas;  
+                            
+           

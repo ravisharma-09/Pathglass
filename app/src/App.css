@@ -42,6 +42,10 @@ main > header{
 
 
 }
+.from-error{
+  color:var(--orange);
+  font-size: 12px;
+}
 
 .workspace .graph {
   background: var(--panel);
@@ -233,7 +237,7 @@ main > footer button:hover{
   color: var(--muted);
   font-size: 12px;
 }
-.workspace >aside :last-child li strong {
+.workspace > aside:last-child li strong {
   color: var(--text);
   font-size: 12px;
 }
@@ -338,4 +342,38 @@ main > footer button:disabled{
   color: var(--orange);
   background: transparent;
   cursor: pointer;
+}
+.delete-item{
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  background: transparent;  
+  cursor: pointer;
+}
+.delete-item:not(:disabled){
+border-color: var(--orange);
+color: var(--orange);
+}
+.delete-item:disabled{
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+.graph g{
+  cursor: pointer;
+}
+
+.graph .selected-node circle {
+  stroke: var(--orange);
+  stroke-dasharray: 4 4;
+}
+
+.graph .selected-edge line {
+  stroke: var(--text) ;
+  stroke-width: 4 ;
+
+}
+.graph .selected-edge .edge-name {
+  fill: var(--text);
 }
