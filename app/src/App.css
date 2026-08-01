@@ -288,26 +288,34 @@ main > footer button:disabled{
   cursor: pointer; 
   color: var(--muted);
 }
-.data-action .add-node{
-  grid-column: 1/-1;
+.data-action .add-node,
+.data-action .add-edge {
   border-color: var(--orange);
   color: var(--orange);
 }
+.data-action button:disabled{
+  cursor: not-allowed;
+  opacity: 0.3;
+}
 
-.vertex-form{
+.vertex-form,
+.edge-form {
   display: grid;
   gap: 9px;
   margin-top: 6px;
   padding-top:10px ;
   border-top: 1px solid var(--border);
 }
-.vertex-form label {
+.vertex-form label,
+.edge-form label {
   display: grid;
   gap: 5px;
   color: var(--muted);
   font-size: 10px;
 }
-.vertex-form input {
+.vertex-form input ,
+.edge-form input ,
+.edge-form select{
   width: 100%;
   padding: 7px 8px;
   border: 1px solid var(--border);
@@ -317,10 +325,13 @@ main > footer button:disabled{
   background-color: var(--page);
   font-size: 10px;
 }
-.vertex-form input:focus {
+.vertex-form input:focus,
+.edge-form input:focus,
+.edge-form select:focus {
   border-color: var(--orange);
 }
-.vertex-form button {
+.vertex-form button,
+.edge-form button {
   padding: 8px;
   border: 1px solid var(--orange);
   border-radius: 4px;

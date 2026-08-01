@@ -45,7 +45,7 @@ function GraphCanvas({
                 return (
                     <g 
                         className={isActive ? "active-edge":undefined}
-                        key={`${edge.from}-${edge.to}`}
+                        key={`${edge.from}-${edge.label}-${edge.to}`}
                      >
                         <line
                             x1={start.x}

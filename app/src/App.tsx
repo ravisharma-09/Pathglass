@@ -55,6 +55,15 @@ function getNodePosition(index: number){
 
 
 function App() {
+
+  const [showEdgeForm ,setShowEdgeForm] = useState(false);
+  const [edgeDraft, setEdgeDraft] = useState({
+    from:"",
+    to:"",
+    label: "",
+
+  });
+  const [edgeError, setEdgeError] = useState("") ;
   const [queryIndex, setQueryIndex] = useState(0) ;
   const [step,setStep] = useState(0);
   const query = savedQueries[queryIndex];
@@ -119,6 +128,13 @@ function App() {
     setStep(0) ;
     setShowVertexForm(true) ;
     setVertexError("");
+    setShowEdgeForm(false);
+    setEdgeDraft({
+      from:"",
+      to:"",
+      label:"",
+    });
+    setEdgeError("");
   }
   function loadDemoGraph() {
     setNodes(demoNodes.map((node)=> ({...node})));
@@ -128,6 +144,58 @@ function App() {
     setShowVertexForm(false);
     setVertexError("");
 
+  }
+  function toggleVertexForm(){
+    setShowVertexForm((current) =>!current);
+    setShowEdgeForm(false);
+    setVertexError("");
+
+  }
+  function toggleEdgeForm(){
+    if(nodes.length < 2){
+      return ;}
+    setShowEdgeForm((current) => !current);
+    setShowVertexForm(false);
+    setEdgeError("");
+  }
+  function addEdge(event: FormEvent<HTMLFormElement>){
+    event.preventDefault() ;
+    const from = edgeDraft.from ;
+    const to = edgeDraft.to ;
+    const label = edgeDraft.label
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-");
+        
+    if(!from || !to || !label){
+      setEdgeError("Complete all three fields");
+      return ;
+    }
+    const alreadyExists = edges.some(
+    (edge)=>
+    edge.from === from && 
+  edge.to === to &&
+edge.label === label ,
+);
+  if (alreadyExists){
+    setEdgeError("That edge already exists");
+    return ;
+  }
+  setEdges((current) => [
+    ...current,
+    {
+      from,
+      to,
+      label,
+    },
+  ]);
+  setEdgeDraft({
+    from:"",
+    to:"",
+    label:"",
+  });
+  setEdgeError("");
+  setStep(0);
   }
 
   function addVertex(event: FormEvent<HTMLFormElement>){
@@ -206,16 +274,28 @@ function App() {
               <button
               className="add-node"
               type="button"
-              onClick={() => setShowVertexForm((current) => !current)}
+              onClick={toggleVertexForm}
               >
-                {showVertexform ? "Close editor" :"+ Add vertexd"}
+                {showVertexform ? "Close vertex" :"+ vertex"}
               </button>
-            <button type="button" onClick={startNewGraph}>
-              New graph
-            </button>
-            <button type="button" onClick={loadDemoGraph}>
-              Load demo
-            </button>
+              <button
+              className="add-edge"
+              type="button"
+              disabled={nodes.length < 2}
+              title={
+                    nodes.length < 2
+                    ? "Add at least two vertices "
+                    : undefined
+              }
+              onClick={toggleEdgeForm}>
+                {showEdgeForm ? "Close edge" : "+ edge"}
+              </button>
+                <button type="button" onClick={startNewGraph}>
+                  New graph
+                </button>
+                <button type="button" onClick={loadDemoGraph}>
+                  Load demo
+                 </button>
           </div>
           {showVertexform && (
             <form className="vertex-form" onSubmit={addVertex}>
@@ -265,6 +345,46 @@ function App() {
               )}
               <button type="submit" > Add to graph</button>
             </form>
+          )}
+          {showEdgeForm && (
+            <form className="edge-form" onSubmit={addEdge}>
+              <label>
+                Source<select
+                value={edgeDraft.from}
+                onChange={(event) =>
+                  setEdgeDraft({
+                    ...edgeDraft,
+                    from:event.target.value,
+                  })
+                }
+                >
+                  <option value="">Choose source</option>
+                  {nodes.map((node) => (
+                    <option key={node.id} value={node.id}>
+                      {node.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                  Label
+                  <input
+                  value={edgeDraft.label}
+                  onChange={(event) =>
+                    setEdgeDraft({
+                      ...edgeDraft,
+                      label:event.target.value,
+                    })
+                  }
+                  placeholder="depends-on"  
+
+                  />  
+                  </label>
+                  {edgeError &&(
+                    <small className="form-error">{edgeError}</small>
+                  )}
+                  <button type="submit">Add edge</button>
+                  </form>
           )}
           </div>
           
