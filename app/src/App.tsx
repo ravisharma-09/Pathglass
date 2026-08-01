@@ -2,14 +2,13 @@ import "./App.css";
 import GraphCanvas , {type ReplayStage} from "./GraphCanvas";
 import {useState , type FormEvent } from "react" ;
 import { demoEdges, demoNodes, type GraphEdge, type GraphNode } from "./graphData";
+import {Graph} from "../../src/graph" ;
 
 type SavedQuery ={
-  text: string ;
-  start: string;
-  edge:string;
-  take?:number ;
-  results: string[];
-  resultNames: string[];
+ text: string ;
+ start: string ;
+ edge: string ;
+ take?:number;
 };
 type PlanStep = {
   kind: ReplayStage ;
@@ -32,15 +31,13 @@ const savedQueries: SavedQuery[] = [
     text: 'v("ravi").out("founded")',
     start: "ravi",
     edge:"founded",
-    results:["northflow"],
-    resultNames :["NorthFlow"],
+
   },
   {
     text: 'v("northflow").out("serves")',
     start: "northflow",
     edge:"serves",
-    results: ["city-clinic"],
-    resultNames:["City Clinic"],
+
 
   },
   {
@@ -48,8 +45,7 @@ const savedQueries: SavedQuery[] = [
     start:"ravi",
     edge:"knows",
     take:2,
-    results:["garvit","meera"],
-    resultNames:["Garvit","Meera"],
+
   }
 
 ];
@@ -60,6 +56,30 @@ function getNodePosition(index: number){
     x: 100 + column * 200,
     y:120 + row * 180 ,
   };
+}
+function runSavedQuery(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  query: SavedQuery,
+){
+  const  graph = new Graph() ;
+
+  for (const node of nodes){
+    graph.addVertex(node.id,{
+      name: node.name,
+      type: node.type,
+    }) ;
+}
+
+  for (const edge of edges){
+    graph.addEdge(edge.from, edge.to, edge.label);
+  }
+  const execution = graph.v(query.start).out(query.edge) ;
+
+  if (query.take !== undefined){
+    execution.take(query.take) ;
+  }
+  return Array.from(execution.iterate());
 }
 
 
@@ -80,6 +100,13 @@ function App() {
   const query = savedQueries[queryIndex];
   const [nodes, setNodes] = useState<GraphNode[]>(demoNodes) ;
   const [edges, setEdges] = useState<GraphEdge[]>(demoEdges) ;
+  const resultVertices = runSavedQuery(nodes, edges, query) ;
+  const resultIds = resultVertices.map((vertex) => vertex.id) ;
+  
+  const resultNames = resultVertices.map((vertex) =>{
+    const name = vertex.properties.name ;
+    return typeof name === "string" ? name : vertex.id ;
+  });
 
   const planSteps: PlanStep[] =[
     {
@@ -104,8 +131,8 @@ function App() {
       ]),
       {
         kind: "result",
-        title: query.results.length === 1? "Return vertex":"Return vertices",
-        code: query.resultNames.join(", ")
+        title: resultIds.length === 1? "Return vertex":"Return vertices",
+        code: resultNames.join(", ") || "NO RESULTS",
           
       }
   ];
@@ -491,7 +518,7 @@ edge.label === label ,
           activeStage={activeStage}
           startNode={query.start}
           activeEdge={query.edge}
-          resultNodes={query.results}
+          resultNodes={resultIds}
           selectedNode ={
             selectedItem?.kind === "node" ? selectedItem.id : null
           }
@@ -521,7 +548,7 @@ edge.label === label ,
           </ol>
           <div className="result">
             <small>Result</small>
-            <strong>{step === lastStep ? query.resultNames.join(", ") : "-" }</strong>
+            <strong>{step === lastStep ? resultNames.join(", ") || "NO RESULTS" : "-" }</strong>
           </div>
         </aside>
       </section>
@@ -546,7 +573,7 @@ edge.label === label ,
         <div className="progress">
           <span style={{width:`${progress}%`}}></span>
         </div>
-        <span>{step === lastStep ? `${query.results.length} ${query.results.length === 1 ? "result": "results"}`:"0 results"}</span>
+        <span>{step === lastStep ? `${resultIds.length} ${resultIds.length === 1 ? "result": "results"}`:"0 results"}</span>
       </footer>
     </main>
 
