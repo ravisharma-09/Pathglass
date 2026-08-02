@@ -48,7 +48,9 @@ function GraphCanvas({
                 const middleX = (start.x + end.x) / 2 ;
                 const middleY = (start.y + end.y) / 2 ;
                 const isActive = 
-                edge.label === activeEdge && activeStage === "edge";
+                activeStage === "edge" &&
+                edge.from === startNode &&
+                edge.label === activeEdge ;
                 const edgeKey = `${edge.from}|${edge.label}|${edge.to}` ;
                 const edgeClass = [ 
                     isActive ? "active-edge" : "",
