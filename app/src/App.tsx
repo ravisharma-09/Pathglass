@@ -4,11 +4,13 @@ import {useEffect ,useState , type FormEvent } from "react" ;
 import { demoEdges, demoNodes, type GraphEdge, type GraphNode } from "./graphData";
 import {Graph} from "../../src/graph" ;
 
+type QueryDirection = "out" | "in" ;
 
 type SavedQuery ={
  text: string ;
  start: string ;
  edge: string ;
+ direction?: QueryDirection ;
  take?:number;
 };
 type SavedWorkspace = {
@@ -96,10 +98,12 @@ function runSavedQuery(
   for (const edge of edges){
     graph.addEdge(edge.from, edge.to, edge.label);
   }
-  const execution = graph.v(query.start).out(query.edge) ;
-
-  if (query.take !== undefined){
-    execution.take(query.take) ;
+  const execution = graph.v(query.start) ;
+  const direction = query.direction ?? "out" ;
+  if (direction === "in"){
+    execution.in(query.edge) ;
+  }else{
+    execution.out(query.edge) ;
   }
   return Array.from(execution.iterate());
 }
@@ -130,6 +134,7 @@ function App() {
     edge:"",
     take:"",
   });
+  const [queryDirection, setQueryDirection] = useState<QueryDirection>("out") ;
   const [queryError, setQueryError] = useState("") ;
   const query = savedQueries[queryIndex] ;
 
@@ -167,7 +172,7 @@ function App() {
     {
       kind:"edge",
       title:"Follow edge",
-      code:`out("${query.edge}")`,
+      code: `${query.direction ?? "out"}("${query.edge}")`,
 
     },
     ...(query.take === undefined
@@ -233,7 +238,7 @@ function App() {
       return ;
     }
 
-    let text = `v("${start}").out("${edge}")` ;
+    let text = `v("${start}").${queryDirection}("${edge}")` ;
 
     if(take !== undefined){
       text += `.take(${take})` ;
@@ -246,6 +251,7 @@ function App() {
       text,
       start,
       edge,
+      direction: queryDirection,
     };
 
     if(take !== undefined){
@@ -256,6 +262,7 @@ function App() {
     setQueryIndex(savedQueries.length) ;
     setStep(0) ;
     setShowQueryForm(false) ;
+    setQueryDirection("out") ;
     setQueryDraft({
       start:"",
       edge:"",
@@ -486,6 +493,18 @@ edge.label === label ,
                 </select>
               </label>
               <label>
+                Direction
+                <select
+                  value={queryDirection}
+                  onChange={(event) =>
+                    setQueryDirection(event.target.value as QueryDirection)
+                  }
+                  >
+                    <option value="out">Outgoing</option>
+                    <option value="in">Incoming</option>
+                  </select>
+              </label>
+              <label>
                 Edge label
                 <input
                   value={queryDraft.edge}
@@ -687,6 +706,7 @@ edge.label === label ,
           activeStage={activeStage}
           startNode={query?.start ?? ""}
           activeEdge={query?.edge ?? ""}
+          direction={query?.direction ?? "out"}
           resultNodes={resultIds}
           selectedNode ={
             selectedItem?.kind === "node" ? selectedItem.id : null

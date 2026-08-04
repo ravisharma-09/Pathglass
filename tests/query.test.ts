@@ -148,7 +148,7 @@ describe("Query", () => {
 
         graph.addEdge("ravi","northflow","works-on") ;
         graph.addEdge("garvit","northflow", "works-on") ;
-        const results = graph 
+        const results = graph
             .v("ravi", "garvit")
             .out("works-on")
             .unique()
@@ -195,7 +195,7 @@ describe("Query", () => {
             type:"company",
             city:"Chandigarh",
         });
-        const results = graph 
+        const results = graph
             .v("ravi", "northflow", "other-company")
             .filter({
                 type: "company",
@@ -258,13 +258,13 @@ describe("Query", () => {
             .out("knows")
             .take(2)
             .run();
-        
+
             expect(results).toEqual([
                 northflow,
                 garvit,
             ]);
         });
-    
+
     it("records a property step", ()=>{
         const graph = new Graph() ;
         const query = graph
@@ -298,7 +298,7 @@ describe("Query", () => {
         graph.addVertex("city-clinic", {
             name:"City Clinic",
         });
-        const results = graph 
+        const results = graph
             .v("northflow", "ravi", "city-clinic")
             .property("name")
             .run() ;
@@ -351,7 +351,7 @@ describe("Query", () => {
         const getVertex = vi.spyOn(graph, "getVertex") ;
 
         const results = Array.from(
-            graph 
+            graph
                 .v("ravi")
                 .out("knows")
                 .take(1)
@@ -360,5 +360,23 @@ describe("Query", () => {
         expect(results).toEqual([northflow]);
         expect(getVertex).toHaveBeenCalledTimes(2) ;
         expect(getVertex).not.toHaveBeenCalledWith("garvit") ;
+    });
+    it("follows incoming edges lazily", () => {
+        const graph = new Graph() ;
+        const ravi = graph.addVertex("ravi") ;
+
+        graph.addVertex("northflow") ;
+        graph.addEdge("ravi", "northflow", "founded") ;
+
+        const results = Array.from(
+            graph
+                .v("northflow")
+                .in("founded")
+                .iterate(),
+        );
+        expect(results).toEqual([ravi]) ;
+
+
+
     });
 })

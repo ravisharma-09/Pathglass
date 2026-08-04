@@ -121,6 +121,25 @@ export class Query {
             }
         }
     }
+    private *incomingVertices(
+        items: Iterable<Vertex>,
+        label: string,
+    ): Generator<Vertex> {
+        for (const vertex of items){
+            const edges = this.graph.getIncomingEdges(vertex.id);
+
+            for(const edge of edges){
+                if (edge.label !== label){
+                    continue ;
+                }
+                const source = this.graph.getVertex(edge.source);
+
+                if (source){
+                    yield source ;
+                }
+            }
+        }
+    }
     *iterate(): Generator<Vertex> {
         const firstStep = this.steps[0] ;
 
@@ -132,7 +151,7 @@ export class Query {
 
         function* startingVertices(): Generator<Vertex>{
         for (const id of startingIds){
-            const vertex = graph.getVertex(id); 
+            const vertex = graph.getVertex(id);
             if (vertex) {
                 yield vertex ;
             }
@@ -143,6 +162,10 @@ export class Query {
     for (const step of this.steps.slice(1)){
         if(step.kind ==="out"){
             results = this.outgoingVertices(results,step.label);
+            continue ;
+        }
+        if(step.kind === "in"){
+            results = this.incomingVertices(results,step.label);
             continue ;
         }
         if (step.kind === "take"){

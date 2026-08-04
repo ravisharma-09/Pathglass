@@ -12,6 +12,7 @@ type GraphCanvasProps ={
     selectedEdge: string | null ;
     onSelectNode: (id:string) => void ;
     onSelectEdge: (key:string) => void ;
+    direction: "out" | "in" ;
 };
 
 export type ReplayStage = "start" | "edge" | "take" | "result" ;
@@ -22,11 +23,13 @@ function GraphCanvas({
     activeStage,
     startNode ,
     activeEdge,
+    direction,
     resultNodes,
     selectedNode,
     selectedEdge,
     onSelectNode,
     onSelectEdge,
+
 }:GraphCanvasProps) {
     const activeNodes = activeStage === "start" ? [startNode] : activeStage === "result" ? resultNodes :[] ;
     return (
@@ -48,10 +51,17 @@ function GraphCanvas({
                 }
                 const middleX = (start.x + end.x) / 2 ;
                 const middleY = (start.y + end.y) / 2 ;
+
+                const touchesStart =
+                    direction === "in"
+                    ? edge.to === startNode
+                    : edge.from === startNode ;
+
                 const isActive =
-                activeStage === "edge" &&
-                edge.from === startNode &&
-                edge.label === activeEdge;
+                    activeStage === "edge" &&
+                    touchesStart &&
+                    edge.label === activeEdge;
+
                 const edgeKey = `${edge.from}|${edge.label}|${edge.to}` ;
                 const edgeClass = [
                     isActive ? "active-edge" : "",
