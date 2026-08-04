@@ -1,5 +1,6 @@
 import type { GraphEdge, GraphNode } from "./graphData";
 
+
 type GraphCanvasProps ={
     nodes: GraphNode[];
     edges: GraphEdge[];
@@ -47,12 +48,12 @@ function GraphCanvas({
                 }
                 const middleX = (start.x + end.x) / 2 ;
                 const middleY = (start.y + end.y) / 2 ;
-                const isActive = 
+                const isActive =
                 activeStage === "edge" &&
                 edge.from === startNode &&
-                edge.label === activeEdge ;
+                edge.label === activeEdge;
                 const edgeKey = `${edge.from}|${edge.label}|${edge.to}` ;
-                const edgeClass = [ 
+                const edgeClass = [
                     isActive ? "active-edge" : "",
                     edgeKey === selectedEdge ? "selected-edge" : "",
                 ]
@@ -60,7 +61,7 @@ function GraphCanvas({
                 .join(" ");
 
                 return (
-                    <g 
+                    <g
                         className={edgeClass}
                         key={edgeKey}
                         onClick={() => onSelectEdge(edgeKey)}
@@ -75,7 +76,7 @@ function GraphCanvas({
                             className="edge-name"
                             x ={middleX}
                             y ={middleY}
-                            
+
                             textAnchor="middle"
                             dominantBaseline="middle"
                         >
@@ -85,7 +86,7 @@ function GraphCanvas({
                 );
             })}
             {nodes.map((node) => {
-                
+
                 const nodeClass = [
                     activeNodes.includes(node.id) ? "active-node" : "",
                     node.id === selectedNode ? "selected-node" : "",
@@ -97,7 +98,7 @@ function GraphCanvas({
                         className={nodeClass}
                         transform={`translate(${node.x} ${node.y})`}
                         onClick={() => onSelectNode(node.id)}
-                    >   
+                    >
                         <circle r="38" />
                         <text y="5">{node.name}</text>
                         <text className="node-type" y="58">
@@ -109,6 +110,5 @@ function GraphCanvas({
         </svg>
     );
 }
-export default GraphCanvas;  
-                            
-           
+export default GraphCanvas;
+

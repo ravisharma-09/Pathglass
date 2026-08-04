@@ -289,7 +289,7 @@ main > footer button:disabled{
   border-radius: 4px;
   background: transparent;
   font-size: 12px;
-  cursor: pointer; 
+  cursor: pointer;
   color: var(--muted);
 }
 .data-action .add-node,
@@ -349,7 +349,7 @@ main > footer button:disabled{
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--muted);
-  background: transparent;  
+  background: transparent;
   cursor: pointer;
 }
 .delete-item:not(:disabled){
@@ -413,4 +413,44 @@ color: var(--orange);
   color: var(--orange);
   background: transparent;
   cursor: pointer;
+}
+.workspace > section,
+.workspace > aside{
+  min-width: 0 ;
+}
+@media (max-width: 800px){
+  main {
+    grid-template-rows: 58px auto 64px ;
+  }
+  .workspace{
+    grid-template-columns: 1fr ;
+  }
+  .query-menu{
+    grid-template-columns: repeat(2,minmax(0, 1fr)); ;
+  }
+  .data-box{
+    margin: 12px 14px ;
+  }
+  .graph svg{
+    min-height: 400px;
+  }
+  main >footer{
+   position: sticky;
+   bottom: 0;
+   z-index: 5;
+   background: var(--page);
+  }
+}
+@media (max-width: 520px){
+  .query-menu{
+    grid-template-columns: 1fr ;
+  }
+ .graph svg{
+    min-height: 340px;
+  }
+  main > footer{
+    gap: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+  }
 }
