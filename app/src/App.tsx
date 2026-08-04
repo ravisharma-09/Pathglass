@@ -1,8 +1,9 @@
 import "./App.css";
 import GraphCanvas , {type ReplayStage} from "./GraphCanvas";
-import {useState , type FormEvent } from "react" ;
+import {useEffect ,useState , type FormEvent } from "react" ;
 import { demoEdges, demoNodes, type GraphEdge, type GraphNode } from "./graphData";
 import {Graph} from "../../src/graph" ;
+
 
 type SavedQuery ={
  text: string ;
@@ -10,13 +11,19 @@ type SavedQuery ={
  edge: string ;
  take?:number;
 };
+type SavedWorkspace = {
+  nodes: GraphNode[] ;
+  edges: GraphEdge[] ;
+  queries: SavedQuery[];
+};
+
 type PlanStep = {
   kind: ReplayStage ;
   title: string ;
   code: string ;
 
 };
-type SelectedGraphItem = 
+type SelectedGraphItem =
    | {
     kind: "node" ;
     id: string ;
@@ -49,6 +56,17 @@ const startingQueries: SavedQuery[] = [
   }
 
 ];
+function readWorkspace(): SavedWorkspace | null {
+  const saved = localStorage.getItem("pathglass-workspace") ;
+  if(!saved){
+    return null ;
+  }
+  try{
+    return JSON.parse(saved) as SavedWorkspace ;
+  }catch{
+    return null ;
+  }
+}
 function getNodePosition(index: number){
   const column = index%4 ;
   const row = Math.floor(index/4);
@@ -60,8 +78,12 @@ function getNodePosition(index: number){
 function runSavedQuery(
   nodes: GraphNode[],
   edges: GraphEdge[],
-  query: SavedQuery,
+  query: SavedQuery | undefined,
 ){
+  if (!query){
+    return [];
+  }
+
   const  graph = new Graph() ;
 
   for (const node of nodes){
@@ -85,6 +107,7 @@ function runSavedQuery(
 
 
 function App() {
+  const [savedWorkspace] = useState(readWorkspace) ;
   const [selectedItem, setSelectedItem] = useState<SelectedGraphItem>(null) ;
 
   const [showEdgeForm ,setShowEdgeForm] = useState(false);
@@ -95,7 +118,10 @@ function App() {
 
   });
   const [edgeError, setEdgeError] = useState("") ;
- const [savedQueries, setSavedQueries] = useState(startingQueries) ;
+ const [savedQueries, setSavedQueries] = useState(
+  savedWorkspace?.queries ?? startingQueries,
+
+ ) ;
   const [queryIndex, setQueryIndex] = useState(0) ;
   const [step, setStep] = useState(0) ;
   const [showQueryForm, setShowQueryForm] = useState(false) ;
@@ -107,17 +133,32 @@ function App() {
   const [queryError, setQueryError] = useState("") ;
   const query = savedQueries[queryIndex] ;
 
-  const [nodes, setNodes] = useState<GraphNode[]>(demoNodes) ;
-  const [edges, setEdges] = useState<GraphEdge[]>(demoEdges) ;
+  const [nodes, setNodes] = useState<GraphNode[]>(
+      savedWorkspace?.nodes ?? demoNodes,
+  ) ;
+  const [edges, setEdges] = useState<GraphEdge[]>(
+      savedWorkspace?.edges ?? demoEdges,
+  ) ;
+  useEffect(() => {
+    localStorage.setItem(
+      "pathglass-workspace",
+      JSON.stringify({
+        nodes,
+        edges,
+        queries: savedQueries,
+      }),
+    );
+  }, [nodes, edges, savedQueries]) ;
   const resultVertices = runSavedQuery(nodes, edges, query) ;
   const resultIds = resultVertices.map((vertex) => vertex.id) ;
-  
+
   const resultNames = resultVertices.map((vertex) =>{
     const name = vertex.properties.name ;
     return typeof name === "string" ? name : vertex.id ;
   });
 
-  const planSteps: PlanStep[] =[
+  const planSteps: PlanStep[] = query
+  ?[
     {
       kind : "start",
       title: "Start",
@@ -142,12 +183,13 @@ function App() {
         kind: "result",
         title: resultIds.length === 1? "Return vertex":"Return vertices",
         code: resultNames.join(", ") || "NO RESULTS",
-          
-      }
-  ];
+
+      },
+  ]
+  :[];
   const activeStage = planSteps[step]?.kind ?? "start" ;
-  const lastStep = planSteps.length - 1 ;
-  const progress =(step/lastStep)*100 ;
+  const lastStep =Math.max(planSteps.length - 1, 0) ;
+  const progress = planSteps.length > 0 ? (step / lastStep) * 100 : 0 ;
 
   const [showVertexform, setShowVertexForm] = useState(false) ;
 
@@ -167,19 +209,22 @@ function App() {
   function chooseQuery(index: number){
     setQueryIndex(index);
     setStep(0);
-
   }
+
   function addQuery(event: FormEvent<HTMLFormElement>){
     event.preventDefault();
+
     const start = queryDraft.start ;
-    const edge = queryDraft.edge 
-     .trim()
-     .toLowerCase()
-     .replace(/\s+/g, "-") ;
+    const edge = queryDraft.edge
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-") ;
+
     if(!start || !edge){
       setQueryError("Choose a start vertex and enter an edge label");
       return ;
     }
+
     const takeText = queryDraft.take.trim() ;
     const take = takeText === "" ? undefined : Number(takeText) ;
 
@@ -187,18 +232,26 @@ function App() {
       setQueryError("Limit must be zero or a positve whole number");
       return ;
     }
+
     let text = `v("${start}").out("${edge}")` ;
+
     if(take !== undefined){
       text += `.take(${take})` ;
+    }
+    if(savedQueries.some((query) => query.text === text)){
+      setQueryError("That query already exists");
+      return ;
     }
     const newQuery: SavedQuery = {
       text,
       start,
       edge,
     };
+
     if(take !== undefined){
       newQuery.take = take ;
     }
+
     setSavedQueries((current) => [...current, newQuery]) ;
     setQueryIndex(savedQueries.length) ;
     setStep(0) ;
@@ -229,7 +282,7 @@ function App() {
     setEdges((current) =>
       current.filter((edge)=>{
         const edgeKey = `${edge.from}|${edge.label}|${edge.to}`;
-        return edgeKey !== selectedItem.key ; 
+        return edgeKey !== selectedItem.key ;
       }),
     );
   }
@@ -264,6 +317,15 @@ function App() {
       label:"",
     });
     setEdgeError("");
+    setSavedQueries([]) ;
+    setQueryIndex(0) ;
+    setShowQueryForm(false) ;
+    setQueryDraft({
+      start:"",
+      edge:"",
+      take:"",
+    });
+    setQueryError("") ;
   }
   function loadDemoGraph() {
     setNodes(demoNodes.map((node)=> ({...node})));
@@ -271,7 +333,7 @@ function App() {
     setQueryIndex(0) ;
     setStep(0);
     setSelectedItem(null);
-
+    setSavedQueries(startingQueries.map((query) => ({...query})));
     setShowVertexForm(false);
     setShowEdgeForm(false);
 
@@ -310,14 +372,14 @@ function App() {
         .trim()
         .toLowerCase()
         .replace(/\s+/g, "-");
-        
+
     if(!from || !to || !label){
       setEdgeError("Complete all three fields");
       return ;
     }
     const alreadyExists = edges.some(
     (edge)=>
-    edge.from === from && 
+    edge.from === from &&
   edge.to === to &&
 edge.label === label ,
 );
@@ -386,7 +448,7 @@ edge.label === label ,
       <header>
         <div className="app-name">
           <strong>Pathglass</strong>
-          
+
         </div>
 
       </header>
@@ -394,7 +456,7 @@ edge.label === label ,
         <aside>
           <div className="query-head">
           <h2>Queries</h2>
-          
+
           <button type="button" aria-label="Add Query" disabled={nodes.length === 0} onClick={() => {
             setShowQueryForm((current) => !current);
             setQueryError("");
@@ -461,7 +523,7 @@ edge.label === label ,
               <button
               className={index === queryIndex ? "active" : undefined}
               type="button"
-              key={savedQuery.text}
+              key={`${savedQuery.text}-${index}`}
               onClick={() => chooseQuery(index)}
               ><span>0{index+1}</span>
               <code>{savedQuery.text}</code>
@@ -498,7 +560,7 @@ edge.label === label ,
                   Load demo
                  </button>
           </div>
-          <button 
+          <button
           className = "delete-item"
           type="button"
           disabled={!selectedItem}
@@ -510,9 +572,9 @@ edge.label === label ,
             <form className="vertex-form" onSubmit={addVertex}>
               <label>
                 Vertex ID
-                <input 
+                <input
                 value={vertexDraft.id}
-                onChange={(event) => 
+                onChange={(event) =>
                   setVertexDraft({
                     ...vertexDraft,
                     id:event.target.value,
@@ -523,8 +585,8 @@ edge.label === label ,
 
               </label>
               <label>
-              Name 
-              <input 
+              Name
+              <input
               value={vertexDraft.name}
               onChange={(event) =>
                 setVertexDraft({
@@ -536,7 +598,7 @@ edge.label === label ,
               />
               </label>
               <label>
-                Type 
+                Type
                 <input
                 value={vertexDraft.type}
                 onChange={(event) =>
@@ -585,9 +647,9 @@ edge.label === label ,
                       label:event.target.value,
                     })
                   }
-                  placeholder="depends-on"  
+                  placeholder="depends-on"
 
-                  />  
+                  />
                   </label>
                   <label>
                     Target
@@ -615,16 +677,16 @@ edge.label === label ,
                   </form>
           )}
           </div>
-          
+
         </aside>
         <section className="graph">
           <h2>Graph canvas</h2>
-          <GraphCanvas 
+          <GraphCanvas
           nodes={nodes}
           edges={edges}
           activeStage={activeStage}
-          startNode={query.start}
-          activeEdge={query.edge}
+          startNode={query?.start ?? ""}
+          activeEdge={query?.edge ?? ""}
           resultNodes={resultIds}
           selectedNode ={
             selectedItem?.kind === "node" ? selectedItem.id : null
@@ -640,7 +702,7 @@ edge.label === label ,
           <h2>Query Plan</h2>
           <ol>
             {planSteps.map((plan,index)=>(
-              <li 
+              <li
               className={index === step ? "current" : undefined}
               key={plan.title}
               >
@@ -655,7 +717,11 @@ edge.label === label ,
           </ol>
           <div className="result">
             <small>Result</small>
-            <strong>{step === lastStep ? resultNames.join(", ") || "NO RESULTS" : "-" }</strong>
+            <strong>
+              {query && step === lastStep
+                ? resultNames.join(", ") || "NO RESULTS"
+                : "-"}
+              </strong>
           </div>
         </aside>
       </section>
@@ -676,7 +742,11 @@ edge.label === label ,
         >
           →
         </button>
-        <span>{step+1}/{planSteps.length}</span>
+
+        <span>
+          {query ? `${step + 1} of ${planSteps.length}` : "0/0"}
+        </span>
+
         <div className="progress">
           <span style={{width:`${progress}%`}}></span>
         </div>
@@ -685,5 +755,5 @@ edge.label === label ,
     </main>
 
   );
-} 
+}
 export default App
